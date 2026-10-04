@@ -56,7 +56,7 @@ theorem Negligible.sqrt {ε : ℕ → ℝ} (h : Negligible ε) :
   have hroot (n : ℕ) : Real.sqrt ((n : ℝ) ^ (2 * degree) * ε n) =
       (n : ℝ) ^ degree * Real.sqrt (ε n) := by
     rw [pow_mul', Real.sqrt_mul (sq_nonneg _), Real.sqrt_sq (by positivity)]
-  simpa only [hroot, Real.sqrt_zero] using (h (2 * degree)).sqrt
+  simpa [hroot] using (h (2 * degree)).sqrt
 
 /-- Polynomially bounded factors preserve negligible decay, including for signed functions. -/
 theorem Negligible.polynomiallyBounded_mul {ε : ℕ → ℝ} {p : ℕ → ℕ}
@@ -101,7 +101,7 @@ theorem Negligible.eventually_le_inv_polynomial {ε : ℕ → ℝ} (hε : Neglig
   exact (le_div_iff₀' (by exact_mod_cast hpos n)).mpr hn
 
 open Filter in
-/-- Halving a unary security parameter preserves negligible decay. -/
+/-- Halving the security parameter preserves negligible decay. -/
 theorem Negligible.div_two {ε : ℕ → ℝ} (h : Negligible ε) : Negligible (fun n => ε (n / 2)) := by
   apply h.comp_of_polynomial_bound (bound := fun n => 2 * (n + 1))
     (Nat.tendsto_div_const_atTop (by decide)) (by fun_prop)
