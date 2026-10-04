@@ -91,24 +91,19 @@ theorem concat_run_proj {xs : ωSequence Symbol} {ss : ωSequence (State1 ⊕ St
   · exact concat_run_right hc n hl (Nat.find_spec hr')
 
 -- some theory of functional simulations between `LTS` might be useful in these situations
-private theorem concat_lift_left {s₁ s₂ : State1} {xs : List Symbol} {ss : List State1}
-    (h : na1.Execution s₁ xs s₂ ss) :
+private theorem concat_lift_left {s₁ xs s₂ ss} (h : na1.Execution s₁ xs s₂ ss) :
     (concat na1 na2).Execution (inl s₁) xs (inl s₂) (ss.map inl) := by
   induction h with
   | refl s => exact .refl (inl s)
   | stepL htr he ih => apply ih.stepL; exact htr
 
-private theorem concat_lift_right {xs : ωSequence Symbol} {ss : ωSequence State2}
-    (h : na2.OmegaExecution ss xs) : (concat na1 na2).OmegaExecution (ss.map inr) xs := h
-
-set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- Given an accepting finite run of `na1` and a run of `na2`, there exists a run of
 `concat na1 na2` that is the concatenation of the two runs. -/
 theorem concat_run_exists {xs1 : List Symbol} {xs2 : ωSequence Symbol} {ss2 : ωSequence State2}
     (h1 : xs1 ∈ language na1) (h2 : na2.Run xs2 ss2) :
     ∃ ss, (concat na1 na2).Run (xs1 ++ω xs2) ss ∧ ss.drop xs1.length = ss2.map inr := by
   obtain (rfl | ⟨xs, x, rfl⟩) := xs1.eq_nil_or_concat'
-  · refine ⟨ss2.map inr, ⟨?_, concat_lift_right h2.trans⟩, rfl⟩
+  · refine ⟨ss2.map inr, ⟨?_, h2.trans⟩, rfl⟩
     simpa [concat, h1] using h2.start
   · let ⟨s0, h0_mem, s1, h1_mem, h_mtr⟩ := h1
     have ⟨ss1, he⟩ := LTS.Execution.of_mTr h_mtr
@@ -120,7 +115,8 @@ theorem concat_run_exists {xs1 : List Symbol} {xs2 : ωSequence Symbol} {ss2 : �
       apply List.head_dropLast
     · rw [append_append_ωSequence, singleton_append_ωSequence]
       obtain he1' := (concat_lift_left (na2 := na2) he).take xs.length (by grind)
-      convert! (concat_lift_right h2.trans).prepend_execution_step he1' (μ := x) ?_
+      obtain h2' : (concat na1 na2).OmegaExecution (ss2.map inr) xs2 := h2.trans
+      convert! h2'.prepend_execution_step he1' (μ := x) ?_
       · simp [List.dropLast_eq_take, he.length]
       · grind
       · simp only [concat, mem_language, List.getElem_map, get_map]
