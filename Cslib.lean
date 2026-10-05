@@ -69,6 +69,7 @@ public import Cslib.Computability.Distributed.MessagePassing.Reasoning
 public import Cslib.Computability.Distributed.MessagePassing.Run
 public import Cslib.Computability.Distributed.MessagePassing.Spec
 public import Cslib.Computability.Distributed.Quorum
+public import Cslib.Computability.Distributed.Synchronous.Algorithm
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
