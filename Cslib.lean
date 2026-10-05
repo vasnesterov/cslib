@@ -63,6 +63,7 @@ public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.MessagePassing.Protocol
 public import Cslib.Computability.Distributed.MessagePassing.Run
+public import Cslib.Computability.Distributed.MessagePassing.Spec
 public import Cslib.Computability.Distributed.Quorum
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
