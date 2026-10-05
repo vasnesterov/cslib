@@ -59,6 +59,7 @@ public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Protocol
 public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Safety
 public import Cslib.Computability.Distributed.Agreement.Byzantine
 public import Cslib.Computability.Distributed.Agreement.GradedConsensus
+public import Cslib.Computability.Distributed.Agreement.PhaseKing
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
