@@ -61,6 +61,7 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.MessagePassing.Bits
 public import Cslib.Computability.Distributed.MessagePassing.Compose
 public import Cslib.Computability.Distributed.MessagePassing.Existence
 public import Cslib.Computability.Distributed.MessagePassing.InputProtocol
