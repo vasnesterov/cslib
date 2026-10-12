@@ -86,6 +86,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Main
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Quorum
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Safety
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Steps
+public import Cslib.Computability.Distributed.DynamicNetworks.Product
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
