@@ -63,6 +63,8 @@ which all correct processes have decided; a bound on it is a bound `L` as above.
 * `ByzantineAgreement.interface`, `ByzantineAgreement.Assumptions`,
   `ByzantineAgreement.Properties`, `ByzantineAgreement.spec`: Byzantine agreement for
   message-passing protocols in partial synchrony.
+* `ByzantineAgreement.SafetyProperties`, `ByzantineAgreement.safetySpec`: its safety part (all
+  guarantees but termination).
 * `InputProtocol.SolvesByzantineAgreement`: a protocol with private inputs (the proposals) is a
   `t`-resilient partially synchronous Byzantine agreement protocol with latency `L`.
 
@@ -72,6 +74,11 @@ which all correct processes have decided; a bound on it is a bound `L` as above.
   `0` rounds is degenerate: with two processes, there is at most one valid value.
 * `InputProtocol.SolvesByzantineAgreement.exists_run`: non-vacuity of
   `InputProtocol.SolvesByzantineAgreement` for `0 < δ`.
+* `ByzantineAgreement.Properties.toSafetyProperties`,
+  `ByzantineAgreement.SafetyProperties.toProperties`: the guarantees are the safety guarantees
+  and termination.
+* `ByzantineAgreement.Properties.mono`, `InputProtocol.SolvesByzantineAgreement.mono`:
+  monotonicity in the latency.
 
 ## References
 
@@ -217,6 +224,48 @@ validity predicate `valid` and the proposals `prop`. -/
 def spec (valid : Value → Prop) (prop : P → Value) (L : ℕ) : Spec P (interface Value) :=
   fun H => Assumptions valid prop H → Properties valid prop L H
 
+/-- The safety guarantees of Byzantine agreement for the validity predicate `valid` and the
+proposals `prop` ([CivitEtAl2024], §1): the guarantees of `ByzantineAgreement.Properties` except
+termination. They hold whatever the timing of the run. -/
+structure SafetyProperties (valid : Value → Prop) (prop : P → Value)
+    (H : History P (interface Value)) : Prop where
+  /-- *Agreement*: no two correct processes decide different values. -/
+  agreement : ∀ p q, H.Correct p → H.Correct q → ∀ v w τ τ',
+    H.IndAt p (.decide v) τ → H.IndAt q (.decide w) τ' → v = w
+  /-- *Strong validity*: if all correct processes propose the same value `v`, then no correct
+  process decides a value other than `v`. -/
+  strongValidity : ∀ v, (∀ p, H.Correct p → prop p = v) →
+    ∀ p, H.Correct p → ∀ w τ, H.IndAt p (.decide w) τ → w = v
+  /-- *External validity*: if a correct process decides a value `v`, then `valid v`. -/
+  externalValidity : ∀ p, H.Correct p → ∀ v τ, H.IndAt p (.decide v) τ → valid v
+  /-- *Integrity*: no correct process decides more than once. -/
+  integrity : ∀ p, H.Correct p → H.AtMostOnce p (· matches .ind _)
+
+/-- The safety specification of Byzantine agreement, for the validity predicate `valid` and the
+proposals `prop`. -/
+def safetySpec (valid : Value → Prop) (prop : P → Value) : Spec P (interface Value) :=
+  fun H => Assumptions valid prop H → SafetyProperties valid prop H
+
+variable {valid : Value → Prop} {prop : P → Value} {H : History P (interface Value)} {L L' : ℕ}
+
+/-- The guarantees of Byzantine agreement include its safety guarantees. -/
+theorem Properties.toSafetyProperties (h : Properties valid prop L H) :
+    SafetyProperties valid prop H :=
+  ⟨h.agreement, h.strongValidity, h.externalValidity, h.integrity⟩
+
+/-- The safety guarantees and termination with latency `L` are the guarantees of Byzantine
+agreement. -/
+theorem SafetyProperties.toProperties (h : SafetyProperties valid prop H)
+    (ht : ∀ p, H.Correct p → ∃ v, H.IndBy p (.decide v) (H.gst + L)) :
+    Properties valid prop L H :=
+  ⟨h.agreement, h.strongValidity, h.externalValidity, h.integrity, ht⟩
+
+/-- The guarantees of Byzantine agreement are monotone in the latency. -/
+theorem Properties.mono (h : Properties valid prop L H) (hL : L ≤ L') :
+    Properties valid prop L' H :=
+  h.toSafetyProperties.toProperties fun p hp =>
+    (h.termination p hp).imp fun _ hv => hv.mono (Nat.add_le_add_left hL _)
+
 end ByzantineAgreement
 
 namespace InputProtocol
@@ -277,6 +326,13 @@ theorem SolvesByzantineAgreement.exists_run [Finite P]
         startAtMostOnce := fun p _ => hreq.atMostOnce (fun _ => rfl) fun T => by simpa using henv T
         startByGst := fun p _ => ⟨0, Nat.zero_le _, hreq.reqAt_iff.2 (by simp)⟩ }⟩
   exact ⟨ρ, hρ, hfaulty, hgst, hreq, hS hAs⟩
+
+/-- Solving Byzantine agreement is monotone in the latency. -/
+theorem SolvesByzantineAgreement.mono
+    {A : InputProtocol P (ByzantineAgreement.interface Value) Value} {t δ : ℕ}
+    {valid : Value → Prop} {L L' : ℕ} (h : A.SolvesByzantineAgreement t δ valid L) (hL : L ≤ L') :
+    A.SolvesByzantineAgreement t δ valid L' :=
+  fun prop ρ hρ hA => (h prop ρ hρ hA).mono hL
 
 end InputProtocol
 
