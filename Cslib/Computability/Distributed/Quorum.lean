@@ -36,6 +36,10 @@ form `Fᶜ`. We call a set `S` with `n - t ≤ #S` a *quorum*; no new definition
 * `Quorum.min_div_le_three`, `Quorum.card_le_three_of_pairwiseDisjoint`: if `3 * t < n`, then
   `min (n / (t + 1)) (n / (n - 3t)) ≤ 3`, so at most three indices have both more than `t` processes
   in one pairwise disjoint family and at least `n - 3t` in another.
+* `Quorum.tOf m = (m - 1) / 3`, the optimal resilience of `m` processes: `Quorum.le_tOf_iff`,
+  `Quorum.three_mul_tOf_lt`, `Quorum.le_three_mul_tOf_add_one`; and
+  `Quorum.exists_card_inter_le_tOf`: if a set of `m` processes has at most `tOf m` faulty ones,
+  some part of any partition of it, of `m_i` processes, has at most `tOf m_i` faulty ones.
 -/
 
 @[expose] public section
@@ -174,5 +178,71 @@ theorem card_le_three_of_pairwiseDisjoint {ι : Type*} {X : Finset ι} {S T : ι
     (hXT : ∀ i ∈ X, Fintype.card P - 3 * t ≤ #(T i)) : #X ≤ 3 :=
   (le_min (card_le_div_of_pairwiseDisjoint hS hXS)
     (card_le_div_sub_of_pairwiseDisjoint hn hT hXT)).trans (min_div_le_three hn)
+
+end Cslib.Distributed.Quorum
+
+/-! ### Optimal resilience -/
+
+namespace Cslib.Distributed.Quorum
+
+open Finset
+
+/-- The optimal resilience of `m` processes: `tOf m = (m - 1) / 3`, i.e. `⌈m / 3⌉ - 1` for
+`m ≥ 1`, is the largest `t` with `3 * t < m` (`Quorum.le_tOf_iff`). Protocols for `3 * t < n`
+run inside a committee of `m` processes with `t := tOf m`. -/
+def tOf (m : ℕ) : ℕ := (m - 1) / 3
+
+/-- `tOf m` is the largest `t` with `3 * t < m`. -/
+theorem le_tOf_iff {m t : ℕ} (hm : 0 < m) : t ≤ tOf m ↔ 3 * t < m := by
+  unfold tOf
+  omega
+
+/-- `m` processes tolerate `tOf m` faults: `3 * tOf m < m`. -/
+theorem three_mul_tOf_lt {m : ℕ} (hm : 0 < m) : 3 * tOf m < m :=
+  (le_tOf_iff hm).1 le_rfl
+
+/-- `tOf` is subadditive up to one: `⌈(a + b) / 3⌉ ≤ ⌈a / 3⌉ + ⌈b / 3⌉`. -/
+theorem tOf_add_le (a b : ℕ) : tOf (a + b) ≤ tOf a + tOf b + 1 := by
+  unfold tOf
+  omega
+
+/-- `m ≤ 3 * (tOf m + 1)`: `tOf m` is within one of `m / 3` (e.g. the hypothesis
+`Fintype.card P ≤ 3 * (t + 1)` holds for a committee of `m` processes with `t := tOf m`). -/
+theorem le_three_mul_tOf_add_one (m : ℕ) : m ≤ 3 * (tOf m + 1) := by
+  unfold tOf
+  omega
+
+/-- `m / (tOf m + 1) ≤ 3`: at most three pairwise disjoint sets of more than `tOf m` processes
+each fit into `m` processes (see `Quorum.card_le_div_of_pairwiseDisjoint`). -/
+theorem div_tOf_add_one_le_three (m : ℕ) : m / (tOf m + 1) ≤ 3 :=
+  Nat.div_le_of_le_mul ((le_three_mul_tOf_add_one m).trans_eq (Nat.mul_comm _ _))
+
+/-- `⌈(∑ i, m i) / 3⌉ ≤ ∑ i, ⌈m i / 3⌉` over a nonempty index set, in terms of `tOf`. -/
+theorem tOf_sum_lt {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (m : ι → ℕ) :
+    tOf (∑ i ∈ s, m i) < ∑ i ∈ s, (tOf (m i) + 1) := by
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton a => simp
+  | cons a s ha hs ih =>
+    rw [sum_cons, sum_cons]
+    have := tOf_add_le (m a) (∑ i ∈ s, m i)
+    omega
+
+/-- If at most `tOf #S` processes of a set `S` are faulty and `S` is split into pairwise disjoint
+parts `S i` (`i ∈ X`, `X` nonempty), then some part has at most `tOf #(S i)` faulty processes.
+Otherwise every part would contain at least `⌈#(S i) / 3⌉` faulty processes, so `S` at least
+`∑ i, ⌈#(S i) / 3⌉ ≥ ⌈#S / 3⌉ > tOf #S`. This is the averaging argument behind "a good committee
+has a good child". -/
+theorem exists_card_inter_le_tOf {P ι : Type*} [DecidableEq P] {F : Finset P} {X : Finset ι}
+    {S : ι → Finset P} (hX : X.Nonempty) (hS : (X : Set ι).PairwiseDisjoint S)
+    (hF : #(F ∩ X.biUnion S) ≤ tOf #(X.biUnion S)) : ∃ i ∈ X, #(F ∩ S i) ≤ tOf #(S i) := by
+  by_contra! h
+  have hFS : (X : Set ι).PairwiseDisjoint fun i => F ∩ S i :=
+    hS.mono fun i => inter_subset_right
+  have h₁ : #(F ∩ X.biUnion S) = ∑ i ∈ X, #(F ∩ S i) := by
+    rw [inter_biUnion, card_biUnion hFS]
+  have h₂ := tOf_sum_lt hX fun i => #(S i)
+  have h₃ : ∑ i ∈ X, (tOf #(S i) + 1) ≤ ∑ i ∈ X, #(F ∩ S i) := sum_le_sum h
+  rw [card_biUnion hS] at hF
+  omega
 
 end Cslib.Distributed.Quorum
