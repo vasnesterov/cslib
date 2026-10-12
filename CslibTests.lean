@@ -12,6 +12,7 @@ import CslibTests.Complexity.Combinators
 import CslibTests.Congruence
 import CslibTests.DFA
 import CslibTests.FreeMonad
+import CslibTests.GaleShapley
 import CslibTests.GrindLint
 import CslibTests.HML
 import CslibTests.HasFresh
