@@ -58,6 +58,7 @@ public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Relabel
+public import Cslib.Computability.Distributed.Byzantine.LockStepToPartialSync
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions

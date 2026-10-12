@@ -70,6 +70,10 @@ partially synchronous model (with clock drift and processes that may start late)
 
 ## Related models in CSLib
 
+* `Cslib.Byzantine.LockStep` is a synchronous lock-step model with history-based protocols on an
+  arbitrary communication graph (with omissions). It is related to this model by
+  `Cslib.Byzantine.LockStep.toAlgorithm_st`: a lock-step protocol, compiled into an `Algorithm`,
+  behaves in the runs of this model with `gst = 0` and `δ = 0` exactly as in the lock-step model.
 * `Cslib.FLP` models *asynchronous* crash-prone consensus as a labelled transition system with
   fairness, where processes may be scheduled arbitrarily; here time is discrete and global, and
   faults are Byzantine. The asynchronous model corresponds informally to an infinite GST, which
