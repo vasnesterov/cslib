@@ -115,6 +115,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedyMIS
+public import Cslib.Foundations.Combinatorics.SimpleGraph.RandomGreedyMIS
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
@@ -255,5 +256,6 @@ public import Cslib.MachineLearning.PACLearning.VCDimension
 public import Cslib.MachineLearning.PACLearning.VersionSpace
 public import Cslib.MachineLearning.PACLearning.VersionSpaceLattice
 public import Cslib.Probability.PMF
+public import Cslib.Probability.RandomOrder.FirstInSet
 public import Cslib.Probability.StatisticalDistance
 public import Cslib.Tactic.GrindAttrs
