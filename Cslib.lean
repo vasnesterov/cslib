@@ -150,6 +150,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
 public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
