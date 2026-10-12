@@ -154,6 +154,8 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
 public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
+public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
