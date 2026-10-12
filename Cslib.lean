@@ -74,6 +74,7 @@ public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.MessagePassing.Bits
 public import Cslib.Computability.Distributed.MessagePassing.Compose
+public import Cslib.Computability.Distributed.MessagePassing.Embed
 public import Cslib.Computability.Distributed.MessagePassing.Existence
 public import Cslib.Computability.Distributed.MessagePassing.InputProtocol
 public import Cslib.Computability.Distributed.MessagePassing.Protocol
