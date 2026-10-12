@@ -62,6 +62,7 @@ public import Cslib.Computability.Distributed.Agreement.Byzantine
 public import Cslib.Computability.Distributed.Agreement.DolevReischuk
 public import Cslib.Computability.Distributed.Agreement.GradedConsensus
 public import Cslib.Computability.Distributed.Agreement.PhaseKing
+public import Cslib.Computability.Distributed.Agreement.ReducedGradedConsensus
 public import Cslib.Computability.Distributed.Agreement.ReducingBroadcast
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
