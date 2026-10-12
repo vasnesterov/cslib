@@ -59,6 +59,7 @@ public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Latency
 public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Protocol
 public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Safety
 public import Cslib.Computability.Distributed.Agreement.Byzantine
+public import Cslib.Computability.Distributed.Agreement.DolevReischuk
 public import Cslib.Computability.Distributed.Agreement.GradedConsensus
 public import Cslib.Computability.Distributed.Agreement.PhaseKing
 public import Cslib.Computability.Distributed.Agreement.ReducingBroadcast
