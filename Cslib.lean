@@ -53,6 +53,7 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Communication
 public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Protocol
 public import Cslib.Computability.Distributed.Agreement.AttiyaWelch.Safety
 public import Cslib.Computability.Distributed.Agreement.Byzantine
