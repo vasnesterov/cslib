@@ -4,6 +4,8 @@ public import Cslib.Algorithms.CCS.VendingMachine
 public import Cslib.Algorithms.Lean.MergeSort.MergeSort
 public import Cslib.Algorithms.Lean.Sort.Insertion
 public import Cslib.Algorithms.Lean.Sort.Merge
+public import Cslib.Algorithms.Lean.StableMatching.Basic
+public import Cslib.Algorithms.Lean.StableMatching.GaleShapley
 public import Cslib.Algorithms.Lean.TimeM
 public import Cslib.Algorithms.StatefulProcesses.DiffieHellman.Basic
 public import Cslib.Computability.Automata.Acceptors.Acceptor
