@@ -101,6 +101,9 @@ public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
 public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
 public import Cslib.Computability.Distributed.SelfStabilization.Unison
+public import Cslib.Computability.Distributed.SharedMemory.History
+public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
