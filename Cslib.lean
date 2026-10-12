@@ -154,6 +154,7 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Cycle
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Girth
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GirthExtremal
+public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
