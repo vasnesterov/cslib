@@ -62,6 +62,7 @@ public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Parallel
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Relabel
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Relay
+public import Cslib.Computability.Distributed.Byzantine.LockStepToPartialSync
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.BinaryConsensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
