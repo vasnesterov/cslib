@@ -156,6 +156,7 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.Girth
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GirthExtremal
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
+public import Cslib.Foundations.Combinatorics.SimpleGraph.RandomGreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
 public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
@@ -301,5 +302,6 @@ public import Cslib.MachineLearning.PACLearning.VCDimension
 public import Cslib.MachineLearning.PACLearning.VersionSpace
 public import Cslib.MachineLearning.PACLearning.VersionSpaceLattice
 public import Cslib.Probability.PMF
+public import Cslib.Probability.RandomOrder.FirstInSet
 public import Cslib.Probability.StatisticalDistance
 public import Cslib.Tactic.GrindAttrs
