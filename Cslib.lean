@@ -64,6 +64,12 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Model
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.RoundAuth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.RoundSeq
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Rounds
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Defs
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Liveness
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Main
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Quorum
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Safety
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Steps
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
