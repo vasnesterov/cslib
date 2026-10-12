@@ -56,6 +56,7 @@ public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.BinaryConsensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Examples
