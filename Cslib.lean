@@ -53,6 +53,7 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.Agreement.Byzantine
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
