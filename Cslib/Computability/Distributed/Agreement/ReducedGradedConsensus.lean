@@ -78,6 +78,12 @@ on values or `⊥_rd`, `AttiyaWelch.protocol P (Option Value) t` (`gc`). The log
 * `ReducedGradedConsensus.card_sent_one_le`: AW′ echoes at most five values in phase `1`.
 * `ReducedGradedConsensus.bitsSent_one_le`, `ReducedGradedConsensus.bitsSent_le`: a correct
   process sends at most `11 n` messages and `11 n (L + 7)` bits, for every `t < n / 3`.
+* `ReducedGradedConsensus.bitsSent_one_le_div`, `ReducedGradedConsensus.bitsSent_le_div`: in
+  every run, whatever the number of faulty processes, a process sends at most `n (n / (t + 1) + 7)`
+  messages and `n (n / (t + 1) + 7) (L + 7)` bits;
+  `ReducedGradedConsensus.bitsSent_one_le_of_card_le`,
+  `ReducedGradedConsensus.bitsSent_le_of_card_le`: `10 n` messages and `10 n (L + 7)` bits if
+  `n ≤ 3 (t + 1)`.
 
 ## References
 
@@ -698,6 +704,18 @@ section Communication
 variable [Fintype P] [DecidableEq P] [DecidableEq Value] {t δ : ℕ} {ρ : Run (protocol P Value t)}
   {p : P}
 
+variable (ρ) in
+/-- The messages sent by a process are those of the two children (the logic sends none). -/
+theorem bitsSent_one_eq_add (p : P) (a b : ℕ) :
+    ρ.bitsSent (fun _ => 1) p a b =
+      (ρ.child .rb).bitsSent (fun _ => 1) p a b + (ρ.child .gc).bitsSent (fun _ => 1) p a b := by
+  have hsize : (fun _ => 1 : (protocol P Value t).Msg → ℕ) =
+      Compose.msgSize (logic P Value) (children P Value t) (fun _ => 1) fun _ _ => 1 := by
+    funext m
+    rcases m with m | ⟨i, m⟩ <;> rfl
+  rw [hsize, Run.bitsSent_compose_univ, Child.sum_univ,
+    Run.bitsSent_eq_zero (ρ := ρ.logic) fun _ _ _ _ m => Empty.elim m, Nat.zero_add]
+
 /-- **AW′ echoes at most five values in phase `1`** (in valid runs with `3t < n`, at correct
 processes): AW′'s `⊥`, `some ⊥_rd`, and at most three values `some (some y)`. Each value `some y`
 proposed to AW′ by a correct process was delivered by it, hence broadcast by `n - 3t` correct
@@ -732,17 +750,10 @@ and at most `10 n` of AW′, since AW′ echoes at most five values in phase `1`
 `AttiyaWelch.bitsSent_one_le_of_card_sent_one_le`); the logic sends nothing. -/
 theorem bitsSent_one_le (hρ : ρ.Valid t δ) (hn : 3 * t < Fintype.card P) (hp : p ∉ ρ.faulty)
     (a b : ℕ) : ρ.bitsSent (fun _ => 1) p a b ≤ Fintype.card P * 11 := by
-  have hsize : (fun _ => 1 : (protocol P Value t).Msg → ℕ) =
-      Compose.msgSize (logic P Value) (children P Value t) (fun _ => 1) fun _ _ => 1 := by
-    funext m
-    rcases m with m | ⟨i, m⟩ <;> rfl
-  rw [hsize, Run.bitsSent_compose_univ, Child.sum_univ]
-  have h₀ : ρ.logic.bitsSent (fun _ => 1) p a b = 0 :=
-    Run.bitsSent_eq_zero fun _ _ _ _ m => Empty.elim m
+  rw [bitsSent_one_eq_add]
   have h₁ := ReducingBroadcast.bitsSent_one_le (ρ.child .rb) p a b
   have h₂ := AttiyaWelch.bitsSent_one_le_of_card_sent_one_le (ρ.child .gc) p a b
     (card_sent_one_le hρ hn hp b)
-  rw [h₀, Nat.zero_add]
   calc _ ≤ Fintype.card P + Fintype.card P * (5 + 5) := Nat.add_le_add h₁ h₂
     _ = Fintype.card P * 11 := by omega
 
@@ -788,6 +799,55 @@ theorem bitsSent_le (hρ : ρ.Valid t δ) (hn : 3 * t < Fintype.card P) (hp : p 
     ρ.bitsSent (msgSize P t valueSize) p a b ≤ Fintype.card P * 11 * (L + 7) :=
   (Run.bitsSent_le_mul (msgSize_le hL)).trans
     (Nat.mul_le_mul_right _ (bitsSent_one_le hρ hn hp a b))
+
+/-! #### Raw bounds (every run, any number of faulty processes)
+
+The bounds above use the validity of the run (at most `t` faulty processes) through the safety of
+the reducing broadcast. The following ones hold in every run, whatever the number of faulty
+processes; they depend on `n / (t + 1)`, which is at most `3` for the largest admissible threshold
+(`n ≤ 3 (t + 1)`). -/
+
+/-- **Messages in every run**: in every window of time, a process sends at most
+`n (n / (t + 1) + 7)` messages: at most `n` of the reducing broadcast
+(`ReducingBroadcast.bitsSent_one_le`) and at most `n (n / (t + 1) + 6)` of AW′
+(`AttiyaWelch.bitsSent_one_le`). No validity of the run is needed. -/
+theorem bitsSent_one_le_div (ρ : Run (protocol P Value t)) (p : P) (a b : ℕ) :
+    ρ.bitsSent (fun _ => 1) p a b ≤ Fintype.card P * (Fintype.card P / (t + 1) + 7) := by
+  rw [bitsSent_one_eq_add]
+  calc _ ≤ Fintype.card P + Fintype.card P * (Fintype.card P / (t + 1) + 6) :=
+        Nat.add_le_add (ReducingBroadcast.bitsSent_one_le (ρ.child .rb) p a b)
+          (AttiyaWelch.bitsSent_one_le (ρ.child .gc) p a b)
+    _ = Fintype.card P * (Fintype.card P / (t + 1) + 7) := by
+        rw [Nat.mul_add, Nat.mul_add]; omega
+
+/-- **Bits in every run**: in every window of time, a process sends at most
+`n (n / (t + 1) + 7) (L + 7)` bits if every value is encoded with at most `L` bits (`msgSize`).
+No validity of the run is needed. -/
+theorem bitsSent_le_div (ρ : Run (protocol P Value t)) (p : P) (a b : ℕ)
+    {valueSize : Value → ℕ} {L : ℕ} (hL : ∀ v, valueSize v ≤ L) :
+    ρ.bitsSent (msgSize P t valueSize) p a b ≤
+      Fintype.card P * (Fintype.card P / (t + 1) + 7) * (L + 7) :=
+  (Run.bitsSent_le_mul (msgSize_le hL)).trans
+    (Nat.mul_le_mul_right _ (bitsSent_one_le_div ρ p a b))
+
+/-- **Messages in every run, for the largest threshold**: if `n ≤ 3 (t + 1)` (e.g.
+`t = ⌊(n - 1) / 3⌋`), a process sends at most `10 n` messages in every window of time
+(`bitsSent_one_le_div`, `n / (t + 1) ≤ 3`). No validity of the run is needed. -/
+theorem bitsSent_one_le_of_card_le (ht : Fintype.card P ≤ 3 * (t + 1))
+    (ρ : Run (protocol P Value t)) (p : P) (a b : ℕ) :
+    ρ.bitsSent (fun _ => 1) p a b ≤ Fintype.card P * 10 :=
+  (bitsSent_one_le_div ρ p a b).trans (Nat.mul_le_mul_left _ (by
+    have := Nat.div_le_of_le_mul (m := Fintype.card P) (k := t + 1) (n := 3) (by omega); omega))
+
+/-- **Bits in every run, for the largest threshold**: if `n ≤ 3 (t + 1)`, a process sends at most
+`10 n (L + 7)` bits in every window of time if every value is encoded with at most `L` bits
+(`msgSize`). No validity of the run is needed. -/
+theorem bitsSent_le_of_card_le (ht : Fintype.card P ≤ 3 * (t + 1))
+    (ρ : Run (protocol P Value t)) (p : P) (a b : ℕ) {valueSize : Value → ℕ} {L : ℕ}
+    (hL : ∀ v, valueSize v ≤ L) :
+    ρ.bitsSent (msgSize P t valueSize) p a b ≤ Fintype.card P * 10 * (L + 7) :=
+  (Run.bitsSent_le_mul (msgSize_le hL)).trans
+    (Nat.mul_le_mul_right _ (bitsSent_one_le_of_card_le ht ρ p a b))
 
 end Communication
 
