@@ -41,13 +41,16 @@ protocol (the number of bits of the encoding of each message).
   `Run.bitsSent_one`: the number of messages is the sum over the receivers of the number of
   messages sent to each.
 * `Run.bitsSent_add_le`: a potential on local states that grows by at least the bits sent at each
-  step bounds the bits sent.
+  step bounds the bits sent; `Run.bitsSent_add_le_add`: the same with a budget of bits for each
+  input.
 * `Run.exists_of_eq`: a run of a protocol is a run of every protocol equal to it, with the same
   history, validity and bits (for the message sizes transported along the equality).
 * `Run.bitsSent_compose` (per time: `Run.sum_bits_output_compose`; finitely many children:
   `Run.bitsSent_compose_univ`): the bits sent by a process of a composite are the bits sent by its
   logic plus the bits sent by its children (if the message of a component is tagged, the tag is
   part of the size function of the component).
+  `Compose.add_msgSize`: extra bits per message of a composite are extra bits per message of its
+  components.
 
 ## References
 
@@ -241,17 +244,20 @@ theorem bitsSent_eq_zero (h : ∀ τ, a ≤ τ → τ < b → ∀ q m, .send q m
   · rfl
   · rfl
 
-/-- *Bits bounded by a potential.* If every step sends at most as many bits as it raises a
-potential `f` on local states, then the bits sent in `[a, b)` are bounded by the growth of `f`
-from time `a` to time `b`. -/
-theorem bitsSent_add_le {f : A.State → ℕ}
+/-- *Bits bounded by a potential and a budget of inputs.* If every step sends at most as many bits
+as it raises a potential `f` on local states, plus a budget `g x` of its input `x`, then the bits
+sent in `[a, b)` are bounded by the growth of `f` from time `a` to time `b` plus the budget of the
+inputs handled in `[a, b)`. -/
+theorem bitsSent_add_le_add {f : A.State → ℕ} {g : A.In → ℕ}
     (hf : ∀ now x s, ((A.step p now x s).2.map (Output.bits size)).sum + f s ≤
-      f (A.step p now x s).1) (hab : a ≤ b) :
-    ρ.bitsSent size p a b + f (ρ.state p a) ≤ f (ρ.state p b) := by
+      f (A.step p now x s).1 + g x) (hab : a ≤ b) :
+    ρ.bitsSent size p a b + f (ρ.state p a) ≤
+      f (ρ.state p b) + (((List.range' a (b - a)).flatMap (ρ.input p)).map g).sum := by
   induction b, hab using Nat.le_induction with
   | base => simp
   | succ b hab ih =>
-    have hb : ρ.bitsSent size p b (b + 1) + f (ρ.state p b) ≤ f (ρ.state p (b + 1)) := by
+    have hb : ρ.bitsSent size p b (b + 1) + f (ρ.state p b) ≤
+        f (ρ.state p (b + 1)) + ((ρ.input p b).map g).sum := by
       rw [bitsSent, Nat.add_sub_cancel_left, List.range'_one, List.flatMap_singleton, output,
         steps, state_succ]
       generalize ρ.state p b = s
@@ -260,11 +266,22 @@ theorem bitsSent_add_le {f : A.State → ℕ}
       | cons x xs ih' =>
         have h₁ := hf (ρ.clock p b) x s
         have h₂ := ih' (A.step p (ρ.clock p b) x s).1
-        simp only [Protocol.batch_cons, List.flatMap_cons, List.map_append, List.sum_append]
-          at h₂ ⊢
+        simp only [Protocol.batch_cons, List.flatMap_cons, List.map_append, List.sum_append,
+          List.map_cons, List.sum_cons] at h₂ ⊢
         omega
-    rw [← bitsSent_add hab (Nat.le_add_right b 1)]
+    rw [← bitsSent_add hab (Nat.le_add_right b 1), show b + 1 - a = b - a + 1 by omega,
+      List.range'_concat, List.flatMap_append, List.flatMap_singleton, List.map_append,
+      List.sum_append, show a + 1 * (b - a) = b by omega]
     omega
+
+/-- *Bits bounded by a potential.* If every step sends at most as many bits as it raises a
+potential `f` on local states, then the bits sent in `[a, b)` are bounded by the growth of `f`
+from time `a` to time `b`. -/
+theorem bitsSent_add_le {f : A.State → ℕ}
+    (hf : ∀ now x s, ((A.step p now x s).2.map (Output.bits size)).sum + f s ≤
+      f (A.step p now x s).1) (hab : a ≤ b) :
+    ρ.bitsSent size p a b + f (ρ.state p a) ≤ f (ρ.state p b) := by
+  simpa using bitsSent_add_le_add (ρ := ρ) (g := fun _ => 0) (fun now x s => hf now x s) hab
 
 /-- **Runs along an equality of protocols.** If `A = A'`, every run of `A` is a run of `A'` with
 the same faulty processes, GST, history and validity, which sends the same bits for the message
@@ -301,6 +318,14 @@ def Compose.msgSize (sizeL : L.Msg → ℕ) (sizeC : (i : ι) → (C i).Msg → 
 
 @[simp] theorem Compose.msgSize_inr (sizeL : L.Msg → ℕ) (sizeC : (i : ι) → (C i).Msg → ℕ)
     (i : ι) (m : (C i).Msg) : Compose.msgSize L C sizeL sizeC (.inr ⟨i, m⟩) = sizeC i m := rfl
+
+/-- `o` extra bits per message of a composite are `o` extra bits per message of the logic and of
+each child (e.g. a tag of the composite inside an enclosing protocol). -/
+theorem Compose.add_msgSize (o : ℕ) (sizeL : L.Msg → ℕ) (sizeC : (i : ι) → (C i).Msg → ℕ) :
+    (fun m => o + Compose.msgSize L C sizeL sizeC m) =
+      Compose.msgSize L C (fun m => o + sizeL m) fun i m => o + sizeC i m := by
+  funext m
+  rcases m with m | ⟨i, m⟩ <;> rfl
 
 variable [DecidableEq ι]
 

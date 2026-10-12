@@ -37,6 +37,7 @@ environment are unconstrained, and faulty processes are arbitrary.
 * `Run.state_congr`, `Run.output_congr`: states and outputs depend only on earlier inputs.
 * `Run.reachable_state`, `Run.rel_state`, `Run.monotone_state`: invariants, relations and
   monotone quantities of states.
+* `Run.Valid.mono_card`: validity is monotone in the bound on the number of faulty processes.
 * `Run.Valid.clock_add`, `Run.Valid.timeout_mem_input`, `Run.Valid.le_of_expires`,
   `Run.Valid.eq_of_expires`, `Run.Valid.exists_expires`, `Run.Valid.exists_timeout_mem_input`:
   clocks and timers after GST.
@@ -276,9 +277,15 @@ theorem monotone_state {α : Type*} [Preorder α] {f : A.State → α} {p : P}
     (hf : ∀ now x s, f s ≤ f (A.step p now x s).1) : Monotone fun τ => f (ρ.state p τ) :=
   fun _ _ => rel_state (Rel := fun s s' => f s ≤ f s') (fun _ => le_rfl) le_trans hf
 
-/-! ### Clocks and timers in valid runs -/
+/-! ### Valid runs -/
 
 variable {t δ : ℕ}
+
+/-- A valid run for at most `t` faulty processes is valid for every bound `t' ≥ t`. -/
+theorem Valid.mono_card {t' : ℕ} (hρ : ρ.Valid t δ) (ht : t ≤ t') : ρ.Valid t' δ :=
+  { hρ with card_faulty_le := hρ.card_faulty_le.trans ht }
+
+/-! ### Clocks and timers in valid runs -/
 
 /-- After GST, local clocks advance at rate `1`. -/
 theorem Valid.clock_add (hρ : ρ.Valid t δ) {p : P} {τ : ℕ} (hτ : ρ.gst ≤ τ) (d : ℕ) :
