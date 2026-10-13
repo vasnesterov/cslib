@@ -99,6 +99,8 @@ public import Cslib.Computability.Distributed.Local.ColorReduction
 public import Cslib.Computability.Distributed.Local.Linial
 public import Cslib.Computability.Distributed.Local.LocallyIterative
 public import Cslib.Computability.Distributed.Local.OnlineLocal
+public import Cslib.Computability.Distributed.MessagePassing.Async
+public import Cslib.Computability.Distributed.MessagePassing.FairExec
 public import Cslib.Computability.Distributed.PopulationProtocols.Basic
 public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
 public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
