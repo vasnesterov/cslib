@@ -62,6 +62,7 @@ public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Basic
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Bridge
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Complete
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Defs
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.DetSpec
