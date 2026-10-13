@@ -61,6 +61,12 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Basic
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Defs
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.History
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Seq
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Times
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.WellFormed
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Indist
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
