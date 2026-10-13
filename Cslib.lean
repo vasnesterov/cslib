@@ -119,6 +119,12 @@ public import Cslib.Computability.Distributed.SharedMemory.BinaryReduction
 public import Cslib.Computability.Distributed.SharedMemory.Consensus
 public import Cslib.Computability.Distributed.SharedMemory.Covering
 public import Cslib.Computability.Distributed.SharedMemory.FullInfo
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Basic
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Defs
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.History
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Seq
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Times
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.WellFormed
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Indist
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
