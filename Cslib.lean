@@ -63,6 +63,7 @@ public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Recoverable
 public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
