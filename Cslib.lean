@@ -182,6 +182,8 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
 public import Cslib.Foundations.Combinatorics.SimpleGraph.VertexConnectivity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
+public import Cslib.Foundations.Combinatorics.SimplicialComplex.IndexLemma
+public import Cslib.Foundations.Combinatorics.SimplicialComplex.Nerve
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
