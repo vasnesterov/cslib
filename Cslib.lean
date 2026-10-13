@@ -57,6 +57,9 @@ public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.Distributed.ApproxConsensus.Iterative
 public import Cslib.Computability.Distributed.ApproxConsensus.Trim
+public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Lemmas
+public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Liveness
+public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Model
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
