@@ -61,6 +61,16 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.SharedMemory.Atomic
+public import Cslib.Computability.Distributed.SharedMemory.History
+public import Cslib.Computability.Distributed.SharedMemory.Indist
+public import Cslib.Computability.Distributed.SharedMemory.LinPoints
+public import Cslib.Computability.Distributed.SharedMemory.Linearization
+public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Progress
+public import Cslib.Computability.Distributed.SharedMemory.SWMRRegister
+public import Cslib.Computability.Distributed.SharedMemory.SWSRRegister
+public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
