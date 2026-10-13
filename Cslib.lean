@@ -120,8 +120,14 @@ public import Cslib.Computability.Distributed.SharedMemory.Consensus
 public import Cslib.Computability.Distributed.SharedMemory.Covering
 public import Cslib.Computability.Distributed.SharedMemory.FullInfo
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Basic
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Complete
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Defs
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.DetSpec
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Equiv
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.History
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.LinPoints
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Locality
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Nonblocking
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Seq
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Times
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.WellFormed
