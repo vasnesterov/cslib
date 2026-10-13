@@ -105,6 +105,7 @@ public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
 public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
 public import Cslib.Computability.Distributed.SelfStabilization.Unison
+public import Cslib.Computability.Distributed.SharedMemory.Anonymous
 public import Cslib.Computability.Distributed.SharedMemory.Atomic
 public import Cslib.Computability.Distributed.SharedMemory.BinaryReduction
 public import Cslib.Computability.Distributed.SharedMemory.Consensus
@@ -115,6 +116,7 @@ public import Cslib.Computability.Distributed.SharedMemory.Indist
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Mutex
 public import Cslib.Computability.Distributed.SharedMemory.Progress
 public import Cslib.Computability.Distributed.SharedMemory.SWSRRegister
 public import Cslib.Computability.Distributed.SharedMemory.Spec
