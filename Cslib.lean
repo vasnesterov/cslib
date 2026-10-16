@@ -92,6 +92,8 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Safety
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Steps
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Impossibility
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Model
+public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
+public import Cslib.Computability.Distributed.CrashPartialSync.Model
 public import Cslib.Computability.Distributed.DynamicNetworks.Chain
 public import Cslib.Computability.Distributed.DynamicNetworks.HeardOf
 public import Cslib.Computability.Distributed.DynamicNetworks.Product
