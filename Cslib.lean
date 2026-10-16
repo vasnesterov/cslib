@@ -111,6 +111,7 @@ public import Cslib.Computability.Distributed.PopulationProtocols.Basic
 public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
 public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
+public import Cslib.Computability.Distributed.PortNumbering.Basic
 public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
 public import Cslib.Computability.Distributed.SelfStabilization.Unison
 public import Cslib.Computability.Distributed.SharedMemory.Anonymous
