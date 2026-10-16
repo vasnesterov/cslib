@@ -212,6 +212,7 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.RandomGreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
 public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
+public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortestWalks
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
 public import Cslib.Foundations.Combinatorics.SimpleGraph.VertexConnectivity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
