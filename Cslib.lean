@@ -200,6 +200,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.Apportionment.Divisor
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.IsolationLemma
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Arboricity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Cycle
