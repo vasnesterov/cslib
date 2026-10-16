@@ -216,6 +216,7 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortcutDilation
 public import Cslib.Foundations.Combinatorics.SimpleGraph.ShortestWalks
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
 public import Cslib.Foundations.Combinatorics.SimpleGraph.VertexConnectivity
+public import Cslib.Foundations.Combinatorics.SimpleGraph.WalkParity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
 public import Cslib.Foundations.Combinatorics.SimplicialComplex.IndexLemma
 public import Cslib.Foundations.Combinatorics.SimplicialComplex.Nerve
