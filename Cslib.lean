@@ -92,8 +92,11 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Safety
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Steps
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Impossibility
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Model
+public import Cslib.Computability.Distributed.ColourSystem.Algorithm
 public import Cslib.Computability.Distributed.ColourSystem.Basic
 public import Cslib.Computability.Distributed.ColourSystem.FreeCoxeter
+public import Cslib.Computability.Distributed.ColourSystem.Graph
+public import Cslib.Computability.Distributed.ColourSystem.MessagePassing
 public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
 public import Cslib.Computability.Distributed.CrashPartialSync.Model
 public import Cslib.Computability.Distributed.DynamicNetworks.Chain
