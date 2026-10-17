@@ -86,6 +86,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Containment
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.DolevStrong
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Examples
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.FLM
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Gossip
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.ICSync
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Map
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Model
