@@ -191,6 +191,7 @@ public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Locality
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Nonblocking
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Seq
+public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.SeqLin
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Times
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.WellFormed
 public import Cslib.Computability.Distributed.SharedMemory.History
