@@ -17,7 +17,8 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
   processes, a run with input configuration `c'` that is indistinguishable from `R` up to time
   `T` for the processes correct in both ("the other processes wake up late": all their messages
   are delayed past `T`, which is legal since `gst := T + 1`). The processes outside `π(c')` are
-  Byzantine: up to `T` they replay their messages of `R`, afterwards they are silent.
+  Byzantine: up to `T` they replay their messages of `R`, afterwards they are silent. Its
+  two-sided variant, merging two runs, is `Run.merge` in `Merge.lean`.
 -/
 
 @[expose] public section
@@ -81,7 +82,8 @@ namespace Run
 
 variable (A : Algorithm P M S VI VO)
 
-/-- The extension of a run `R` to configuration `c'` after time `T` (see module docstring). -/
+/-- The extension of a run `R` to configuration `c'` after time `T` (see module docstring).
+`Run.merge` (`Merge.lean`) is its two-sided variant, merging two runs. -/
 def extend (R : Run P M VI) (c' : Config P VI) (T : ℕ) : Run P M VI where
   faulty := c'.procsᶜ
   inp p := (c' p).getD (R.inp p)
