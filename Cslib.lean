@@ -106,6 +106,7 @@ public import Cslib.Computability.Distributed.Congest.LowerBound
 public import Cslib.Computability.Distributed.Congest.Randomized
 public import Cslib.Computability.Distributed.ContentOblivious.Lockstep
 public import Cslib.Computability.Distributed.ContentOblivious.Model
+public import Cslib.Computability.Distributed.ContentOblivious.Splice
 public import Cslib.Computability.Distributed.ContentOblivious.VirtualRing
 public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
 public import Cslib.Computability.Distributed.CrashPartialSync.Model
