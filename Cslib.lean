@@ -64,6 +64,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.RoundOne
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.RunClasses
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sim
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sync
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.TwoStepLowerBound
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
