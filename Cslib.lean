@@ -128,6 +128,8 @@ public import Cslib.Computability.Distributed.MessagePassing.Async
 public import Cslib.Computability.Distributed.MessagePassing.FairExec
 public import Cslib.Computability.Distributed.PopulationProtocols.Basic
 public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
+public import Cslib.Computability.Distributed.PopulationProtocols.Nondet
+public import Cslib.Computability.Distributed.PopulationProtocols.RandomScheduler
 public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
 public import Cslib.Computability.Distributed.PortNumbering.Basic
