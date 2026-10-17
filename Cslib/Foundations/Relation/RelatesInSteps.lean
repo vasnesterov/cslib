@@ -9,6 +9,7 @@ module
 public import Cslib.Init
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Fintype.Card
 public import Mathlib.Logic.Relation
 
 /-! # Relations Across Steps
@@ -23,7 +24,10 @@ The lemma `RelatesInSteps.exists_isChainFromTo` allows to obtain a chain
 `Relation.relatesInSteps_iff_exists_isChainFromTo` combines both.
 
 Another result is `Relation.ReflTransGen.relatesInSteps_lt_encard`, which states that any element
-reachable from `a` is reachable in fewer steps than there are elements reachable from `a`.
+reachable from `a` is reachable in fewer steps than there are elements reachable from `a`; in a
+finite type, `Relation.ReflTransGen.relatesWithinSteps_card_sub_one` bounds the number of steps by
+`|α| - 1`. `Relation.RelatesInSteps.exists_le_first_visit` cuts a walk at the first visit of its
+target, and `Relation.ReflTransGen.exists_isChainFromTo_nodup` gives a duplicate-free chain.
 -/
 
 @[expose] public section
@@ -291,5 +295,89 @@ theorem ReflTransGen.relatesInSteps_lt_encard {b : α} (h : ReflTransGen r a b) 
     rwa [Set.encard_coe_eq_coe_finsetCard, List.toFinset_card_of_nodup h_nodup] at this
   -- The chain has one more element than the number of steps.
   exact lt_of_lt_of_le (by rw [hlen]; exact_mod_cast Nat.lt_succ_self n) h_le
+
+/-! ## Walks of bounded length -/
+
+/-- A walk of bounded length is a walk. -/
+theorem RelatesWithinSteps.reflTransGen (h : RelatesWithinSteps r a b n) : ReflTransGen r a b :=
+  let ⟨_, _, h⟩ := h; h.reflTransGen
+
+/-- `b` is reachable from `a` iff it is reachable within some number of steps. -/
+theorem reflTransGen_iff_exists_relatesWithinSteps :
+    ReflTransGen r a b ↔ ∃ n, RelatesWithinSteps r a b n :=
+  ⟨fun h => let ⟨n, h⟩ := h.relatesInSteps; ⟨n, .of_relatesInSteps h⟩,
+    fun ⟨_, h⟩ => h.reflTransGen⟩
+
+/-- Extend a walk of length `≤ n` by a final step. -/
+theorem RelatesWithinSteps.tail (h : RelatesWithinSteps r a b n) (hbc : r b c) :
+    RelatesWithinSteps r a c (n + 1) :=
+  let ⟨k, hk, h⟩ := h; ⟨k + 1, by omega, .tail _ _ _ _ h hbc⟩
+
+/-- Extend a walk of length `≤ n` by an initial step. -/
+theorem RelatesWithinSteps.head (hab : r a b) (h : RelatesWithinSteps r b c n) :
+    RelatesWithinSteps r a c (n + 1) :=
+  let ⟨k, hk, h⟩ := h; ⟨k + 1, by omega, .head _ _ _ _ hab h⟩
+
+/-- A walk of length `≤ n + 1` is a walk of length `≤ n` or a walk of length `≤ n` followed by a
+step. -/
+theorem relatesWithinSteps_succ_iff :
+    RelatesWithinSteps r a b (n + 1) ↔
+      RelatesWithinSteps r a b n ∨ ∃ c, RelatesWithinSteps r a c n ∧ r c b := by
+  refine ⟨fun ⟨k, hk, h⟩ => ?_, ?_⟩
+  · rcases Nat.lt_or_ge k (n + 1) with hlt | hge
+    · exact .inl ⟨k, by omega, h⟩
+    · obtain rfl : k = n + 1 := by omega
+      obtain ⟨c, hc, hcb⟩ := h.succ
+      exact .inr ⟨c, .of_relatesInSteps hc, hcb⟩
+  · rintro (h | ⟨c, hc, hcb⟩)
+    · exact RelatesWithinSteps.mono n.le_succ h
+    · exact hc.tail hcb
+
+/-- A walk of length `≤ n + 1` is trivial or a step followed by a walk of length `≤ n`. -/
+theorem relatesWithinSteps_succ_iff' :
+    RelatesWithinSteps r a b (n + 1) ↔ a = b ∨ ∃ c, r a c ∧ RelatesWithinSteps r c b n := by
+  refine ⟨fun ⟨k, hk, h⟩ => ?_, ?_⟩
+  · cases k with
+    | zero => exact .inl h.zero
+    | succ k =>
+      obtain ⟨c, hac, hc⟩ := h.succ'
+      exact .inr ⟨c, hac, ⟨k, by omega, hc⟩⟩
+  · rintro (rfl | ⟨c, hac, hc⟩)
+    · exact RelatesWithinSteps.mono (Nat.zero_le _) (RelatesWithinSteps.refl a)
+    · exact hc.head hac
+
+/-- In a finite type, everything reachable is reachable within `|α| - 1` steps. -/
+theorem ReflTransGen.relatesWithinSteps_card_sub_one [Fintype α] (h : ReflTransGen r a b) :
+    RelatesWithinSteps r a b (Fintype.card α - 1) := by
+  obtain ⟨n, hn, hlt⟩ := h.relatesInSteps_lt_encard
+  have hle : {x | ReflTransGen r a x}.encard ≤ Fintype.card α := by
+    simpa using Set.encard_le_encard (Set.subset_univ {x | ReflTransGen r a x})
+  have : n < Fintype.card α := by exact_mod_cast hlt.trans_le hle
+  exact ⟨n, by omega, hn⟩
+
+/-- A walk of length `n` to `b` can be cut at its first visit of `b`: there is a walk of length
+`m ≤ n` from `a` to `b` none of whose steps starts at `b`. -/
+theorem RelatesInSteps.exists_le_first_visit (h : RelatesInSteps r a b n) :
+    ∃ m ≤ n, RelatesInSteps (fun x y => r x y ∧ x ≠ b) a b m := by
+  suffices ∀ c k, RelatesInSteps r a c k → RelatesInSteps (fun x y => r x y ∧ x ≠ b) a c k ∨
+      ∃ m ≤ k, RelatesInSteps (fun x y => r x y ∧ x ≠ b) a b m by
+    rcases this b n h with h | h
+    exacts [⟨n, le_rfl, h⟩, h]
+  intro c k hc
+  induction hc with
+  | refl => exact .inl (.refl _)
+  | tail c d k _ hcd ih =>
+    rcases ih with h | ⟨m, hm, h⟩
+    · by_cases hc : c = b
+      · subst hc; exact .inr ⟨k, by omega, h⟩
+      · exact .inl (.tail _ _ _ _ h ⟨hcd, hc⟩)
+    · exact .inr ⟨m, by omega, h⟩
+
+/-- Reachability is witnessed by a duplicate-free chain. -/
+theorem ReflTransGen.exists_isChainFromTo_nodup (h : ReflTransGen r a b) :
+    ∃ l : List α, l.IsChainFromTo r a b ∧ l.Nodup := by
+  obtain ⟨n, hn⟩ := h.relatesInSteps
+  obtain ⟨l, hl, -⟩ := hn.exists_isChainFromTo
+  exact hl.exists_nodup
 
 end Relation
