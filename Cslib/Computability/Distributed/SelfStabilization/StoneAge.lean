@@ -7,6 +7,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Cslib.Init
+public import Cslib.Foundations.Data.Nat.Descent
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Tactic.Linarith
@@ -128,41 +129,11 @@ theorem shift (hC : IsRun G P A C) (T : ℕ) : IsRun G P (fun t => A (T + t)) (f
 
 end IsRun
 
-/-! ## Induction over time intervals -/
+/-! ## Induction over time intervals (deprecated aliases, see `Nat.Icc_induction_down`) -/
 
-/-- Backward induction on an interval. -/
-theorem back_induction {P : ℕ → Prop} {a b : ℕ} (hb : P b)
-    (h : ∀ s, a ≤ s → s < b → P (s + 1) → P s) : ∀ s, a ≤ s → s ≤ b → P s := by
-  have key : ∀ n s, s + n = b → a ≤ s → P s := by
-    intro n
-    induction n with
-    | zero => intro s hs _; simpa [← hs] using hb
-    | succ n ih => intro s hs has; exact h s has (by omega) (ih (s + 1) (by omega) (by omega))
-  intro s hs hsb
-  exact key (b - s) s (by omega) hs
-
-/-- Forward induction on an interval. -/
-theorem fwd_induction {P : ℕ → Prop} {a b : ℕ} (ha : P a)
-    (h : ∀ s, a ≤ s → s < b → P s → P (s + 1)) : ∀ s, a ≤ s → s ≤ b → P s := by
-  intro s hs hsb
-  induction s, hs using Nat.le_induction with
-  | base => exact ha
-  | succ n hn ih => exact h n hn (by omega) (ih (by omega))
-
-/-- The first time in `(s, B]` at which `Q` holds, given that `Q` fails at `s`. -/
-theorem exists_first {Q : ℕ → Prop} {s B : ℕ} (h0 : ¬ Q s)
-    (h : ∃ s1, s < s1 ∧ s1 ≤ B ∧ Q s1) :
-    ∃ r, s ≤ r ∧ r + 1 ≤ B ∧ ¬ Q r ∧ Q (r + 1) ∧ ∀ r', s ≤ r' → r' ≤ r → ¬ Q r' := by
-  classical
-  have hex : ∃ s1, s < s1 ∧ s1 ≤ B ∧ Q s1 := h
-  obtain ⟨hs1, hs2, hs3⟩ := Nat.find_spec hex
-  obtain ⟨r, hr⟩ : ∃ r, Nat.find hex = r + 1 := ⟨Nat.find hex - 1, by omega⟩
-  have hmin : ∀ r', s ≤ r' → r' ≤ r → ¬ Q r' := by
-    intro r' h1 h2 hq
-    rcases Nat.eq_or_lt_of_le h1 with h | h
-    · subst h; exact h0 hq
-    · exact Nat.find_min hex (show r' < Nat.find hex by omega) ⟨h, by omega, hq⟩
-  exact ⟨r, by omega, by omega, hmin r (by omega) le_rfl, hr ▸ hs3, hmin⟩
+@[deprecated (since := "2026-10-18")] alias back_induction := Nat.Icc_induction_down
+@[deprecated (since := "2026-10-18")] alias fwd_induction := Nat.Icc_induction_up
+@[deprecated (since := "2026-10-18")] alias exists_first := Nat.exists_first_Ioc
 
 /-! ## Fairness and the round operator -/
 
