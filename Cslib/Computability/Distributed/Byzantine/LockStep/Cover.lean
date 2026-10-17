@@ -19,6 +19,9 @@ by `σ` consistently (honest neighbours of honest parties are lifted to the desi
 then the Byzantine parties can simulate the rest of `Q`, so that every honest party has exactly the
 history of its lift. Hence its decision is the decision of the lift in the covering system.
 
+`Cslib.Byzantine.PartialSync.CoverSystem` is the analogous construction for runs of the
+partially synchronous model.
+
 Compared to the usual formulation via graph covering maps, `nbr` may be partial (`none` = silent
 neighbour), which also covers "split-brain" arguments where some copies are crashed.
 -/
