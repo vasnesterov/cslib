@@ -108,6 +108,7 @@ public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
 public import Cslib.Computability.Distributed.CrashPartialSync.Model
 public import Cslib.Computability.Distributed.DynamicNetworks.Chain
 public import Cslib.Computability.Distributed.DynamicNetworks.HeardOf
+public import Cslib.Computability.Distributed.DynamicNetworks.Journey
 public import Cslib.Computability.Distributed.DynamicNetworks.Product
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
