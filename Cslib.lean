@@ -321,6 +321,7 @@ public import Cslib.Foundations.Data.Nat.Asymptotics
 public import Cslib.Foundations.Data.Nat.CeilDiv
 public import Cslib.Foundations.Data.Nat.Descent
 public import Cslib.Foundations.Data.Nat.Factorial
+public import Cslib.Foundations.Data.Nat.Log
 public import Cslib.Foundations.Data.Nat.ModCount
 public import Cslib.Foundations.Data.Nat.Segment
 public import Cslib.Foundations.Data.Nat.TimeRec
@@ -334,6 +335,7 @@ public import Cslib.Foundations.Data.PFunctor.Basic
 public import Cslib.Foundations.Data.PFunctor.Free
 public import Cslib.Foundations.Data.PFunctor.Free.Fold
 public import Cslib.Foundations.Data.PFunctor.Free.W
+public import Cslib.Foundations.Data.Real.Logb
 public import Cslib.Foundations.Data.Set.Saturation
 public import Cslib.Foundations.Data.StackTape
 public import Cslib.Foundations.Lint.Basic
