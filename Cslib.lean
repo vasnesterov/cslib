@@ -66,6 +66,7 @@ public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Lemmas
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Liveness
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Model
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Schedule
+public import Cslib.Computability.Distributed.Byzantine.KingPhase
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
@@ -97,6 +98,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Main
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Quorum
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Safety
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Steps
+public import Cslib.Computability.Distributed.Byzantine.Specs
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Impossibility
 public import Cslib.Computability.Distributed.Byzantine.SyncCounting.Model
 public import Cslib.Computability.Distributed.ColourSystem.Algorithm
