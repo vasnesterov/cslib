@@ -61,6 +61,12 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.PopulationProtocols.Basic
+public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
+public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
+public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
+public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
+public import Cslib.Computability.Distributed.SelfStabilization.Unison
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
@@ -127,8 +133,10 @@ public import Cslib.Foundations.Data.FinFun.Update
 public import Cslib.Foundations.Data.HasFresh
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Cslib.Foundations.Data.Nat.Asymptotics
+public import Cslib.Foundations.Data.Nat.Descent
 public import Cslib.Foundations.Data.Nat.Factorial
 public import Cslib.Foundations.Data.Nat.Segment
+public import Cslib.Foundations.Data.Nat.TimeRec
 public import Cslib.Foundations.Data.OmegaSequence.Defs
 public import Cslib.Foundations.Data.OmegaSequence.Flatten
 public import Cslib.Foundations.Data.OmegaSequence.InfOcc
