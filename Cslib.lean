@@ -282,6 +282,7 @@ public import Cslib.Foundations.Combinatorics.Digraph.Walk
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.IsolationLemma
 public import Cslib.Foundations.Combinatorics.Labelling
+public import Cslib.Foundations.Combinatorics.Matrix.Birkhoff
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Arboricity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
