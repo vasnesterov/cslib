@@ -21,6 +21,11 @@ arguments), a type of responses and a deterministic transition function
 The same structure is used both for the *implemented* (high-level) object and for the *base*
 objects of an implementation (registers, CAS, …).
 
+*Nondeterministic* sequential specifications (`NSpec Op Resp`: a transition relation
+`Step q o r q'`, e.g. sets whose `take` returns an arbitrary element, or relaxed queues) are used
+as correctness conditions only; `NSpec.Legal q l` is the legality of a sequence of
+(operation, response) pairs from `q`, and `ObjSpec.toNSpec` views a deterministic specification
+as a nondeterministic one.
 -/
 
 @[expose] public section
@@ -145,5 +150,46 @@ abbrev casObject (V : Type) [DecidableEq V] (v₀ : V) : ObjSpec where
 other processes invoke nothing. -/
 def RWOp.SWSR {V : Type} {P : Type} (w r : P) (p : P) (o : RWOp V) : Prop :=
   (p = w ∧ ∃ v, o = .write v) ∨ (p = r ∧ o = .read)
+
+end Cslib.SharedMemory
+
+/-! ### Nondeterministic sequential specifications -/
+
+namespace Cslib.SharedMemory
+
+/-- A *nondeterministic* sequential specification over operations `Op` and responses `Resp`:
+`Step q o r q'` says that applying `o` in state `q` may return `r` and move to `q'`. -/
+structure NSpec (Op Resp : Type) where
+  /-- States. -/
+  State : Type
+  /-- The initial state. -/
+  init : State
+  /-- The transition relation. -/
+  Step : State → Op → Resp → State → Prop
+
+namespace NSpec
+
+variable {Op Resp : Type} (S : NSpec Op Resp)
+
+/-- A sequence of operations with responses is legal from state `q`. -/
+def Legal : S.State → List (Op × Resp) → Prop
+  | _, [] => True
+  | q, (o, r) :: l => ∃ q', S.Step q o r q' ∧ Legal q' l
+
+@[simp] lemma legal_nil (q : S.State) : S.Legal q [] := trivial
+
+@[simp] lemma legal_cons (q : S.State) (o : Op) (r : Resp) (l : List (Op × Resp)) :
+    S.Legal q ((o, r) :: l) ↔ ∃ q', S.Step q o r q' ∧ S.Legal q' l := Iff.rfl
+
+end NSpec
+
+/-- The deterministic specification `A` as a nondeterministic one. -/
+def ObjSpec.toNSpec (A : ObjSpec) : NSpec A.Op A.Resp where
+  State := A.State
+  init := A.init
+  Step q o r q' := A.δ q o = (q', r)
+
+@[simp] lemma ObjSpec.toNSpec_step (A : ObjSpec) (q : A.State) (o : A.Op) (r : A.Resp)
+    (q' : A.State) : A.toNSpec.Step q o r q' ↔ A.δ q o = (q', r) := Iff.rfl
 
 end Cslib.SharedMemory
