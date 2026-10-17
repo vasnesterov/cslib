@@ -31,6 +31,13 @@ signature) variant is a *restriction* on scenarios and protocols, see
 
 ## Related models in CSLib
 
+* `Cslib.Byzantine.PartialSync` is a partially synchronous model with state machines on a
+  complete network; lock-step rounds are its special case `gst = 0`, `δ = 0`. A lock-step
+  protocol compiles into it (`Protocol.toAlgorithm`) and behaves there as in this model
+  (`toAlgorithm_st`). The models are kept separate because they suit different proofs: this one
+  supports arbitrary networks and omissions, and its history-based protocols make simulations
+  (covers, relabelling, relays, parallel composition) definitional; the other one supports
+  asynchrony before GST, message delays and message counting.
 * `Cslib.FLP` models asynchronous crash-prone consensus; this model is synchronous and Byzantine.
 -/
 

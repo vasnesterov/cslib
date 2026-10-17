@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.ENat.Lattice
+public import Cslib.Foundations.Data.List.Basic
 
 /-!
 # A partially synchronous Byzantine message-passing model
@@ -43,6 +44,8 @@ The key tool is `Run.st_eq_of_inbox_eq`: two runs that feed a set `X` of process
 inboxes up to time `T` (given that `X` behaved identically so far) give `X` the same states;
 this is the formal *indistinguishability* principle used for all "merge executions" and
 "delay a group's messages" arguments.
+On a link with a constant delay `e`, the inbox at time `τ` is the batch sent at time `τ - e`
+(`Run.inbox_of_dl_eq_add`).
 
 ## Scope of results proved in this model
 
@@ -70,6 +73,10 @@ partially synchronous model (with clock drift and processes that may start late)
 
 ## Related models in CSLib
 
+* `Cslib.Byzantine.LockStep` is a synchronous lock-step model with history-based protocols on an
+  arbitrary communication graph (with omissions). It is related to this model by
+  `Cslib.Byzantine.LockStep.toAlgorithm_st`: a lock-step protocol, compiled into an `Algorithm`,
+  behaves in the runs of this model with `gst = 0` and `δ = 0` exactly as in the lock-step model.
 * `Cslib.FLP` models *asynchronous* crash-prone consensus as a labelled transition system with
   fairness, where processes may be scheduled arbitrarily; here time is discrete and global, and
   faults are Byzantine. The asynchronous model corresponds informally to an infinite GST, which
@@ -263,6 +270,20 @@ def msgsUpTo [Fintype P] (N : ℕ) : ℕ := ∑ τ ∈ Finset.Ico R.gst N, R.msg
 /-- Message complexity of a run: number of messages sent by correct processes during
 `[gst, ∞)`. -/
 noncomputable def msgComplexity [Fintype P] : ℕ∞ := ⨆ N, (R.msgsUpTo A N : ℕ∞)
+
+/-- On a link `q → p` on which every batch is delivered `e` time units after it is sent, the inbox
+of `p` at time `τ` is the batch sent by `q` at time `τ - e` (nothing before time `e`). -/
+theorem inbox_of_dl_eq_add {R : Run P M VI} {q p : P} {e : ℕ} (h : ∀ σ, R.dl q σ p = σ + e)
+    (τ : ℕ) : R.inbox A p τ q = if e ≤ τ then R.out A q (τ - e) p else [] := by
+  rw [inbox_eq_flatMap]
+  split_ifs with he
+  · rw [List.flatMap_range_eq_of_forall_ne (k := τ - e) (by omega)]
+    · simp only [dlv, h]; rw [ite_eq_left (by omega)]
+    · intro t ht
+      simp only [dlv, h]; rw [ite_eq_right (by omega)]
+  · refine List.flatMap_eq_nil_iff.mpr fun t _ => ?_
+    simp only [dlv, h]
+    rw [ite_eq_right (by omega)]
 
 end Run
 
