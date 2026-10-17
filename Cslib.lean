@@ -119,6 +119,8 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.IteratedModel.Basic
+public import Cslib.Computability.Distributed.IteratedModel.Patterns
 public import Cslib.Computability.Distributed.Knowledge.Basic
 public import Cslib.Computability.Distributed.Local.ColorReduction
 public import Cslib.Computability.Distributed.Local.Identifiers
