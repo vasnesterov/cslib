@@ -210,6 +210,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Scheme
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.Apportionment.Divisor
+public import Cslib.Foundations.Combinatorics.Digraph.Walk
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.IsolationLemma
 public import Cslib.Foundations.Combinatorics.Labelling
