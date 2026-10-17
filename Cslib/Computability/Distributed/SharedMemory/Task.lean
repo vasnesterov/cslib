@@ -23,7 +23,9 @@ at most once (`OneShot`); its input is its first invocation, its output its firs
 * `taskObj`, `inputs α p`, `outputs α p`, `OneShot α`.
 * `Impl.Solves T`: every finite one-shot execution satisfies `T.Δ`.
 * `Impl.OneShotOF`: obstruction-freedom restricted to one-shot executions (the weakest progress
-  condition used by covering arguments); `WaitFree → ObstructionFree → OneShotOF`.
+  condition used by covering arguments); `WaitFree → ObstructionFree → OneShotOF`. It is
+  `ObstructionFreeOn OneShot` (`Impl.oneShotOF_iff`); one-shot executions are closed under
+  prefixes (`prefixClosed_oneShot`).
 -/
 
 @[expose] public section
@@ -66,6 +68,9 @@ lemma OneShot.of_append [DecidableEq P] {α β : List (Label P A)} (h : OneShot 
     OneShot α := fun p => by
   have := h p; simp only [opsOf_append, List.length_append] at this; omega
 
+lemma prefixClosed_oneShot [DecidableEq P] : PrefixClosed (OneShot (P := P) (A := A)) :=
+  fun _ _ h => h.of_append
+
 variable {ι : Type} {B : ι → ObjSpec} {L : Type} [DecidableEq P] [DecidableEq ι]
 
 namespace Impl
@@ -90,6 +95,9 @@ lemma ObstructionFree.oneShotOF (h : I.ObstructionFree) : I.OneShotOF :=
 
 lemma WaitFree.oneShotOF (h : I.WaitFree) : I.OneShotOF :=
   (WaitFree.obstructionFree I h).oneShotOF I
+
+/-- One-shot obstruction-freedom is obstruction-freedom on one-shot executions. -/
+lemma oneShotOF_iff : I.OneShotOF ↔ I.ObstructionFreeOn OneShot := Iff.rfl
 
 /-- A process that never invokes anything takes no step at all. -/
 lemma proc_ne_of_opsOf_eq_nil {α : List (Label P A)} {C : Config A B P L} (h : I.run α = some C)

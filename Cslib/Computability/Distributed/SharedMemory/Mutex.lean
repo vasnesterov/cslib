@@ -23,8 +23,9 @@ An execution is *client-well-formed* (`ClientWF`) if every process follows this 
 
 * `MutualExclusion I`: in every finite client-well-formed execution at most one process is in
   its critical section.
-* `InfExec.Fair e`: every process with a pending operation eventually takes a step (so it either
-  finishes its operation or takes infinitely many steps).
+* `InfExec.Fair e` (defined for all implementations in `Progress.lean`): every process with a
+  pending operation eventually takes a step (so it either finishes its operation or takes
+  infinitely many steps).
 * `DeadlockFree I`: in every fair client-well-formed infinite execution, if at some time some
   process has a pending `lock`/`unlock` and no process is in the critical section, then some
   `lock`/`unlock` operation completes later.
@@ -109,16 +110,6 @@ in its critical section. -/
 def MutualExclusion : Prop :=
   ∀ α, I.Valid α → ClientWF α → ∀ p q, InCS α p → InCS α q → p = q
 
-/-- The labels of the first `t` steps of an infinite execution. -/
-def InfExec.pre {I : Impl mutexObj B P L} (e : I.InfExec) (t : ℕ) : List (Label P mutexObj) :=
-  (List.range t).map e.lbl
-
-/-- An infinite execution is *fair* if every process with a pending operation eventually takes a
-step (internal step or response). Iterating, a process with a pending operation either completes
-it or takes infinitely many steps. -/
-def InfExec.Fair {I : Impl mutexObj B P L} (e : I.InfExec) : Prop :=
-  ∀ p t, (e.cfg t).pend p ≠ none → ∃ t' ≥ t, (e.lbl t').proc = p ∧ (e.lbl t').IsStep
-
 /-- **Deadlock-freedom**: in every fair client-well-formed infinite execution, if at time `t` some
 process has a pending `lock()`/`unlock()` and no process is in its critical section, then some
 `lock()`/`unlock()` operation completes at some time `t' ≥ t`. -/
@@ -126,60 +117,6 @@ def DeadlockFree : Prop :=
   ∀ e : I.InfExec, (∀ t, ClientWF (e.pre t)) → e.Fair → ∀ t,
     (∃ p, (e.cfg t).pend p ≠ none) → (∀ q, ¬ InCS (e.pre t) q) →
       ∃ t' ≥ t, ∃ p r, e.lbl t' = .ret p r
-
-variable {I}
-
-lemma InfExec.pre_succ (e : I.InfExec) (t : ℕ) : e.pre (t + 1) = e.pre t ++ [e.lbl t] := by
-  simp [InfExec.pre, List.range_succ]
-
-lemma InfExec.run_pre (e : I.InfExec) (t : ℕ) : I.run (e.pre t) = some (e.cfg t) := by
-  induction t with
-  | zero => simp [InfExec.pre, e.cfg_zero]
-  | succ t ih =>
-    rw [e.pre_succ, I.run_append_of_eq ih, I.runFrom_singleton, e.step_eq]
-
-lemma InfExec.valid_pre (e : I.InfExec) (t : ℕ) : I.Valid (e.pre t) := ⟨_, e.run_pre t⟩
-
-/-- **Progress by a measure.** Let `Good` be a property of times and `μ` a measure. Suppose that
-from time `t` on, as long as `Good` fails, process `p` eventually takes a step, each step of `p`
-makes `Good` true or decreases `μ`, and other labels make `Good` true or do not increase `μ`.
-Then `Good` eventually holds. -/
-lemma InfExec.exists_good (e : I.InfExec) (p : P) (Good : ℕ → Prop) (μ : ℕ → ℕ) (t : ℕ)
-    (hstep : ∀ t' ≥ t, ¬ Good t' → ∃ t'' ≥ t', (e.lbl t'').proc = p ∧ (e.lbl t'').IsStep)
-    (hp : ∀ t' ≥ t, ¬ Good t' → (e.lbl t').proc = p → (e.lbl t').IsStep →
-      Good (t' + 1) ∨ μ (t' + 1) < μ t')
-    (ho : ∀ t' ≥ t, ¬ Good t' → ¬ ((e.lbl t').proc = p ∧ (e.lbl t').IsStep) →
-      Good (t' + 1) ∨ μ (t' + 1) ≤ μ t') :
-    ∃ t' ≥ t, Good t' := by
-  induction hn : μ t using Nat.strong_induction_on generalizing t with
-  | _ n ih =>
-    by_contra hcon
-    push Not at hcon
-    obtain ⟨t'', ht'', hpt, hst⟩ := hstep t le_rfl (hcon t le_rfl)
-    -- between `t` and `t''` the measure does not increase
-    have hle : ∀ k, t + k ≤ t'' → μ (t + k) ≤ n := by
-      intro k
-      induction k with
-      | zero => intro _; simp [hn]
-      | succ k ihk =>
-        intro hk
-        have h1 := ihk (by omega)
-        by_cases hpk : (e.lbl (t + k)).proc = p ∧ (e.lbl (t + k)).IsStep
-        · rcases hp (t + k) (by omega) (hcon _ (by omega)) hpk.1 hpk.2 with h | h
-          · exact absurd h (hcon _ (by omega))
-          · rw [← Nat.add_assoc]; omega
-        · rcases ho (t + k) (by omega) (hcon _ (by omega)) hpk with h | h
-          · exact absurd h (hcon _ (by omega))
-          · rw [← Nat.add_assoc]; omega
-    have h2 := hle (t'' - t) (by omega)
-    rw [show t + (t'' - t) = t'' by omega] at h2
-    rcases hp t'' ht'' (hcon _ ht'') hpt hst with h | h
-    · exact hcon _ (by omega) h
-    · obtain ⟨t₃, ht₃, hg⟩ := ih (μ (t'' + 1)) (by omega) (t'' + 1)
-        (fun t' ht' hg => hstep t' (by omega) hg)
-        (fun t' ht' hg => hp t' (by omega) hg)
-        (fun t' ht' hg => ho t' (by omega) hg) rfl
-      exact hcon t₃ (by omega) hg
 
 end Impl
 
