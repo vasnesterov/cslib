@@ -7,6 +7,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Defs
+public import Cslib.Foundations.Data.Finset.Quorum
 
 /-!
 # Vector consensus: one-round facts
@@ -257,14 +258,11 @@ omit [Fintype P] in
 /-- Among more than `|F|` processes, one is correct. -/
 theorem exists_correct_of_cnt {f : P → Prop} (hF : F.card ≤ t) (h : t + 1 ≤ cnt f) :
     ∃ k, k ∉ F ∧ f k := by
-  by_contra hc
-  push Not at hc
-  have hs : {q | f q} ⊆ (F : Set P) := fun k hk => by
-    by_contra hk'; exact hc k hk' hk
-  have := Set.ncard_le_ncard hs (F.finite_toSet)
-  rw [Set.ncard_coe_finset] at this
   unfold cnt at h
-  omega
+  have hfin : {q | f q}.Finite := Set.finite_of_ncard_pos (by omega)
+  obtain ⟨k, hk, hkF⟩ := Finset.exists_mem_notMem_of_card_le_of_lt (s := hfin.toFinset) hF
+    (by rw [← Set.ncard_eq_toFinset_card _ hfin]; omega)
+  exact ⟨k, hkF, by simpa using hk⟩
 
 /-- **Confirmed statuses of correct processes are genuine.** -/
 theorem confirmed_genuine (hF : F.card ≤ t) {u : ℕ} {p : P} {S : P → Option (Status P VI)}
