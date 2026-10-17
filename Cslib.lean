@@ -114,6 +114,14 @@ public import Cslib.Crypto.Protocols.SecretSharing.Scheme
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
+public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Cycle
+public import Cslib.Foundations.Combinatorics.SimpleGraph.FaultTolerantGreedy
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Girth
+public import Cslib.Foundations.Combinatorics.SimpleGraph.GirthExtremal
+public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedySpanner
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
+public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
@@ -125,6 +133,7 @@ public import Cslib.Foundations.Data.DecidableEqZero
 public import Cslib.Foundations.Data.FinFun.Basic
 public import Cslib.Foundations.Data.FinFun.Update
 public import Cslib.Foundations.Data.HasFresh
+public import Cslib.Foundations.Data.List.GreedyScan
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Cslib.Foundations.Data.Nat.Asymptotics
 public import Cslib.Foundations.Data.Nat.Factorial
