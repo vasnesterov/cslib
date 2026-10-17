@@ -56,7 +56,8 @@ automata); this is a harmless generalization of "the step that returns also acce
 * forward step equations `Impl.step_inv_eq_some`, `Impl.step_tau_eq_some`,
   `Impl.step_ret_eq_some` (complementing the inversion lemmas `step_inv`/`step_tau`/`step_ret`);
 * `Impl.run_concat`, the induction principle `Impl.run_induction` over executions,
-  `Impl.invariant_of_run` (invariants of reachable configurations), `Impl.Reachable.step`;
+  `Impl.invariant_of_run` (invariants of reachable configurations), `Impl.Reachable.step`,
+  `Impl.allowed_of_mem_opsOf` (every invoked operation is allowed);
 * `Impl.pend_none_of_opsOf_nil`, `Impl.run_pend_curOp`: a pending operation is the current
   instance of its process, invoked and not completed;
 * `Impl.exists_linFun_of_run`, `Impl.linearizable_of_run`: choosing a linearization function from
@@ -575,6 +576,26 @@ lemma invariant_of_run {Inv : Config A B P L → Prop} (h0 : Inv I.initCfg)
     (hs : ∀ C ℓ C', Inv C → I.step C ℓ = some C' → Inv C') {α : List (Label P A)}
     {C : Config A B P L} (h : I.run α = some C) : Inv C :=
   run_induction (Q := fun _ C => Inv C) h0 (fun _ _ ℓ _ _ hC hs' => hs _ ℓ _ hC hs') h
+
+variable (I) in
+/-- Every operation invoked in an execution is allowed. -/
+lemma allowed_of_mem_opsOf {α : List (Label P A)} (hα : I.Valid α) {p : P} {o : A.Op}
+    (ho : o ∈ opsOf α p) : I.allowed p o := by
+  obtain ⟨C, hC⟩ := hα
+  refine I.run_induction (Q := fun α _ => ∀ o ∈ opsOf α p, I.allowed p o) (by simp)
+    (fun α C ℓ C' _ ih hs o ho => ?_) hC o ho
+  rw [opsOf_concat, List.mem_append] at ho
+  rcases ho with ho | ho
+  · exact ih o ho
+  · cases ℓ with
+    | inv q o' =>
+      by_cases hq : q = p
+      · subst hq
+        simp only [Label.invOf_inv, ↓reduceIte, Option.toList_some, List.mem_singleton] at ho
+        subst ho; exact (step_inv hs).2.1
+      · simp [hq] at ho
+    | ret q x => simp at ho
+    | tau q => simp at ho
 
 lemma Reachable.step {C C' : Config A B P L} (hC : I.Reachable C) {ℓ : Label P A}
     (h : I.step C ℓ = some C') : I.Reachable C' := by

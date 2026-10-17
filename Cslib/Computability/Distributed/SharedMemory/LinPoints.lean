@@ -64,25 +64,6 @@ lemma seqOK_congr {α α' : List (Label P A)} (q : A.State) (L : List (OpId P ×
     simp only [SeqOK]
     rw [h (x, o) (by simp), ih _ (fun y hy => h y (by simp [hy]))]
 
-lemma completed_iff_respOf {α : List (Label P A)} {x : OpId P} :
-    Completed α x ↔ (respOf α x).isSome := by
-  simp [Completed, respOf]
-
-lemma respOf_append_ret (α : List (Label P A)) (p : P) (r : A.Resp) (y : OpId P) :
-    respOf (α ++ [.ret p r]) y =
-      if y = (p, (respsOf α p).length) then some r else respOf α y := by
-  obtain ⟨q, k⟩ := y
-  simp only [respOf, respsOf_append, respsOf_cons, Label.retOf_ret, respsOf_nil, append_nil,
-    Prod.mk.injEq]
-  by_cases hq : p = q
-  · subst hq
-    simp only [ite_true, Option.toList_some, true_and]
-    rcases lt_trichotomy k (respsOf α p).length with h | rfl | h
-    · rw [getElem?_append_left h, ite_eq_right (by omega)]
-    · simp
-    · rw [ite_eq_right (by omega), getElem?_eq_none (by simp; omega), getElem?_eq_none (by omega)]
-  · simp [hq, Ne.symm hq]
-
 namespace IsLinearization
 
 variable {α : List (Label P A)} {L : List (OpId P × A.Op)}

@@ -64,7 +64,21 @@ Bookkeeping lemmas for invariant proofs over executions extended one label at a 
 * `precedes_concat`, `Precedes.of_concat_of_not_ret`, `not_precedes_append`: real-time order
   after appending labels.
 * `opsOf_filter_proc`, `respsOf_filter_proc`: restricting an execution to the labels of `p`.
-* `Label.isInv`, `numInv`, `numInv_eq_sum`: the number of invocations of an execution.
+* `Label.isInv`, `invCount`, `invCount_eq_sum`: the number of invocations of an execution.
+
+## Well-formed histories, real-time order and invocation order
+
+* `WellFormed.counts`, `WellFormed.resps_le_ops`, `WellFormed.invoked_of_completed`: invocation
+  and response counts in well-formed histories;
+* `WellFormed.append_singleton`, `WellFormed.append_inv`, `WellFormed.append_ret`: extending a
+  well-formed history by one label;
+* `Precedes.trans`, `Precedes.lt_of_proc` (program order),
+  `Precedes.completed_of_append_singleton`, `Precedes.not_of_invoked`,
+  `precedes_append_iff_of_invoked`, `precedes_append_inv_iff`: real-time order;
+* `invIdsFrom`, `invIds`: the invoked instances in invocation order (`mem_invIds`,
+  `nodup_invIds`, `invIdsFrom_append` with the counters `invCountFrom`); real-time order implies
+  invocation order (`Precedes.sublist_invIds`);
+* `completed_iff_respOf`, `respOf_append_ret`: completed instances and responses.
 
 ## Nondeterministic specifications
 
@@ -755,27 +769,27 @@ def isInv : Label P A → Bool
 end Label
 
 /-- The number of invocations in an execution. -/
-def numInv (α : List (Label P A)) : ℕ := α.countP Label.isInv
+def invCount (α : List (Label P A)) : ℕ := α.countP Label.isInv
 
 /-- The empty execution has no invocations. -/
-@[simp] lemma numInv_nil : numInv ([] : List (Label P A)) = 0 := rfl
+@[simp] lemma invCount_nil : invCount ([] : List (Label P A)) = 0 := rfl
 
 /-- Invocations of a concatenation. -/
-@[simp] lemma numInv_append (α β : List (Label P A)) :
-    numInv (α ++ β) = numInv α + numInv β := List.countP_append ..
+@[simp] lemma invCount_append (α β : List (Label P A)) :
+    invCount (α ++ β) = invCount α + invCount β := List.countP_append ..
 
 /-- Invocations after prepending a label. -/
-@[simp] lemma numInv_cons (ℓ : Label P A) (α : List (Label P A)) :
-    numInv (ℓ :: α) = numInv α + if ℓ.isInv then 1 else 0 := by
-  simp [numInv, List.countP_cons]
+@[simp] lemma invCount_cons (ℓ : Label P A) (α : List (Label P A)) :
+    invCount (ℓ :: α) = invCount α + if ℓ.isInv then 1 else 0 := by
+  simp [invCount, List.countP_cons]
 
 /-- The number of invocations is the sum over the processes of their numbers of invocations. -/
-lemma numInv_eq_sum [Fintype P] [DecidableEq P] (α : List (Label P A)) :
-    numInv α = ∑ p, (opsOf α p).length := by
+lemma invCount_eq_sum [Fintype P] [DecidableEq P] (α : List (Label P A)) :
+    invCount α = ∑ p, (opsOf α p).length := by
   induction α with
   | nil => simp
   | cons ℓ α ih =>
-    simp only [numInv_cons, ih, opsOf_cons, List.length_append, Finset.sum_add_distrib]
+    simp only [invCount_cons, ih, opsOf_cons, List.length_append, Finset.sum_add_distrib]
     cases ℓ with
     | inv q o =>
       have h1 : ∀ p, ((Label.inv q o : Label P A).invOf p).toList.length =
@@ -784,5 +798,257 @@ lemma numInv_eq_sum [Fintype P] [DecidableEq P] (α : List (Label P A)) :
       simp only [h1, Finset.sum_ite_eq, Finset.mem_univ, ite_true, Label.isInv_inv]; omega
     | ret q r => simp
     | tau q => simp
+
+end Cslib.SharedMemory
+
+/-! ### Well-formed histories, real-time order and invocation order -/
+
+namespace Cslib.SharedMemory
+
+open List
+
+variable {P : Type} {A : ObjSpec} [DecidableEq P]
+
+/-- In a well-formed history, every prefix has at most one more invocation than responses per
+process, and at least as many. -/
+lemma WellFormed.counts {α β γ : List (Label P A)} (hα : WellFormed α) (h : α = β ++ γ) (p : P) :
+    (respsOf β p).length ≤ (opsOf β p).length ∧
+      (opsOf β p).length ≤ (respsOf β p).length + 1 := by
+  induction β using List.reverseRecOn generalizing γ with
+  | nil => simp
+  | append_singleton β ℓ ih =>
+    have ih' := ih (γ := ℓ :: γ) (by simp [h])
+    have hwf := hα β ℓ γ (by simp [h]) p
+    simp only [opsOf_append, respsOf_append, opsOf_cons, respsOf_cons, opsOf_nil, respsOf_nil,
+      List.append_nil, List.length_append]
+    cases ℓ with
+    | inv q o =>
+      by_cases hq : q = p
+      · subst hq; have := hwf.1 (by simp); simp; omega
+      · simp [hq]; omega
+    | ret q x =>
+      by_cases hq : q = p
+      · subst hq; have := hwf.2 (by simp); simp; omega
+      · simp [hq]; omega
+    | tau q => simp; omega
+
+/-- In a well-formed history, every process has at most as many responses as invocations. -/
+lemma WellFormed.resps_le_ops {α : List (Label P A)} (hα : WellFormed α) (p : P) :
+    (respsOf α p).length ≤ (opsOf α p).length :=
+  (hα.counts (γ := []) (by simp) p).1
+
+/-- A completed operation has been invoked (well-formed histories). -/
+lemma WellFormed.invoked_of_completed {α : List (Label P A)} (hα : WellFormed α) {x : OpId P}
+    (h : Completed α x) : Invoked α x :=
+  lt_of_lt_of_le h (hα.resps_le_ops x.1)
+
+/-- Real-time order is transitive (well-formed histories). -/
+lemma Precedes.trans {α : List (Label P A)} (hα : WellFormed α) {a b c : OpId P}
+    (h₁ : Precedes α a b) (h₂ : Precedes α b c) : Precedes α a c := by
+  obtain ⟨β₁, γ₁, e₁, ha, hb⟩ := h₁
+  obtain ⟨β₂, γ₂, e₂, hb', hc⟩ := h₂
+  have hb'' : Invoked β₂ b := (hα.counts e₂ b.1).1.trans_lt' hb'
+  rcases List.prefix_or_prefix_of_prefix (l₃ := α) ⟨γ₁, e₁.symm⟩ ⟨γ₂, e₂.symm⟩ with hp | hp
+  · obtain ⟨δ, rfl⟩ := hp
+    exact ⟨_, γ₂, e₂, ha.mono, hc⟩
+  · obtain ⟨δ, rfl⟩ := hp
+    exact absurd hb''.mono hb
+
+/-- If `b` is invoked in `α ++ γ` and `a` precedes `b` there, then `a` has completed... at the
+latest when `b` is invoked; in particular, if `b` is not invoked in `α`, the response of `a` is
+in `α ++ γ` before `b`'s invocation. Special case used most often: `γ = [ℓ]`. -/
+lemma Precedes.completed_of_append_singleton {α : List (Label P A)} {ℓ : Label P A}
+    {a b : OpId P} (h : Precedes (α ++ [ℓ]) a b) (hb : Invoked (α ++ [ℓ]) b) :
+    Completed α a := by
+  obtain ⟨β, γ', e, ha, hnb⟩ := h
+  rcases List.prefix_or_prefix_of_prefix (l₃ := α ++ [ℓ]) ⟨γ', e.symm⟩ (List.prefix_append α [ℓ])
+    with hp | hp
+  · obtain ⟨δ, rfl⟩ := hp
+    exact ha.mono
+  · obtain ⟨δ, hδ⟩ := hp
+    rcases δ with _ | ⟨x, δ⟩
+    · simp only [append_nil] at hδ; subst hδ; exact ha
+    · have : β = α ++ [ℓ] := by
+        have hl := congrArg List.length e
+        have hl2 := congrArg List.length hδ
+        simp at hl hl2
+        obtain ⟨γ'', rfl⟩ : ∃ γ'', γ' = γ'' := ⟨_, rfl⟩
+        have : γ' = [] := by
+          rw [← List.length_eq_zero_iff]; omega
+        simpa [this] using e.symm
+      subst this; exact absurd hb hnb
+
+/-- Program order: an operation of `p` can only precede later operations of `p`. -/
+lemma Precedes.lt_of_proc {α : List (Label P A)} (hα : WellFormed α) {p : P} {i j : ℕ}
+    (h : Precedes α (p, i) (p, j)) : i < j := by
+  obtain ⟨β, γ, e, hi, hj⟩ := h
+  have := (hα.counts e p).1
+  simp only [Completed, Invoked] at hi hj
+  omega
+
+/-- Instances invoked in `α` in invocation order, numbering the invocations of `p` from `c p`. -/
+def invIdsFrom (c : P → ℕ) : List (Label P A) → List (OpId P)
+  | [] => []
+  | .inv p _ :: α => (p, c p) :: invIdsFrom (Function.update c p (c p + 1)) α
+  | .ret _ _ :: α => invIdsFrom c α
+  | .tau _ :: α => invIdsFrom c α
+
+/-- Instances invoked in `α`, in invocation order. -/
+def invIds (α : List (Label P A)) : List (OpId P) := invIdsFrom (fun _ => 0) α
+
+/-- The instances listed by `invIdsFrom c α`. -/
+lemma mem_invIdsFrom (c : P → ℕ) (α : List (Label P A)) (x : OpId P) :
+    x ∈ invIdsFrom c α ↔ c x.1 ≤ x.2 ∧ x.2 < c x.1 + (opsOf α x.1).length := by
+  induction α generalizing c with
+  | nil => simp [invIdsFrom]
+  | cons ℓ α ih =>
+    cases ℓ with
+    | inv p o =>
+      simp only [invIdsFrom, mem_cons, ih, opsOf_cons, Label.invOf_inv, length_append]
+      obtain ⟨q, k⟩ := x
+      by_cases hq : p = q
+      · subst hq; simp [Function.update_self]; omega
+      · have hqp : q ≠ p := Ne.symm hq
+        simp [hq, hqp]
+    | ret p r => simp [invIdsFrom, ih]
+    | tau p => simp [invIdsFrom, ih]
+
+/-- `invIds α` lists exactly the invoked instances. -/
+lemma mem_invIds (α : List (Label P A)) (x : OpId P) : x ∈ invIds α ↔ Invoked α x := by
+  simp [invIds, mem_invIdsFrom, Invoked]
+
+/-- `invIdsFrom c α` has no duplicates. -/
+lemma nodup_invIdsFrom (c : P → ℕ) (α : List (Label P A)) : (invIdsFrom c α).Nodup := by
+  induction α generalizing c with
+  | nil => simp [invIdsFrom]
+  | cons ℓ α ih =>
+    cases ℓ with
+    | inv p o =>
+      simp only [invIdsFrom, nodup_cons, mem_invIdsFrom, Function.update_self]
+      exact ⟨by omega, ih _⟩
+    | ret p r => exact ih c
+    | tau p => exact ih c
+
+/-- `invIds α` has no duplicates. -/
+lemma nodup_invIds (α : List (Label P A)) : (invIds α).Nodup := nodup_invIdsFrom _ _
+
+/-- The invocation counters after `α`, starting from the counters `c`: `c p` plus the number of
+invocations of `p` in `α`. -/
+def invCountFrom (c : P → ℕ) (α : List (Label P A)) : P → ℕ := fun p => c p + (opsOf α p).length
+
+/-- `invIdsFrom` of a concatenation. -/
+lemma invIdsFrom_append (c : P → ℕ) (α β : List (Label P A)) :
+    invIdsFrom c (α ++ β) = invIdsFrom c α ++ invIdsFrom (invCountFrom c α) β := by
+  induction α generalizing c with
+  | nil =>
+    have : invCountFrom c ([] : List (Label P A)) = c := by funext p; simp [invCountFrom]
+    simp [invIdsFrom, this]
+  | cons ℓ α ih =>
+    cases ℓ with
+    | inv p o =>
+      simp only [cons_append, invIdsFrom, ih, cons.injEq, true_and]
+      congr 2
+      funext q
+      by_cases hq : q = p
+      · subst hq; simp [invCountFrom, Function.update_self]; omega
+      · simp [invCountFrom, Function.update_of_ne hq, Ne.symm hq]
+    | ret p r => simp only [cons_append, invIdsFrom, ih]; rfl
+    | tau p => simp only [cons_append, invIdsFrom, ih]; rfl
+
+/-- Real-time order implies invocation order. -/
+lemma Precedes.sublist_invIds {α : List (Label P A)} {a b : OpId P} (h : Precedes α a b)
+    (hb : Invoked α b) (hwf : WellFormed α) : [a, b].Sublist (invIds α) := by
+  obtain ⟨β, γ, rfl, ha, hnb⟩ := h
+  have ha' : Invoked β a := lt_of_lt_of_le ha
+    ((hwf.counts (γ := γ) rfl a.1).1)
+  rw [invIds, invIdsFrom_append]
+  refine (List.singleton_sublist.2 ((mem_invIds β a).2 ha')).append
+    (List.singleton_sublist.2 ?_)
+  rw [mem_invIdsFrom]
+  simp only [Invoked, opsOf_append, length_append, invCountFrom, Nat.zero_add, not_lt] at hb hnb ⊢
+  omega
+
+/-- Extending a well-formed history by one label. -/
+lemma WellFormed.append_singleton {α : List (Label P A)} {ℓ : Label P A} (hα : WellFormed α)
+    (hℓ : ∀ p, (ℓ.invOf p ≠ none → (opsOf α p).length = (respsOf α p).length) ∧
+      (ℓ.retOf p ≠ none → (opsOf α p).length = (respsOf α p).length + 1)) :
+    WellFormed (α ++ [ℓ]) := by
+  intro β ℓ' γ he q
+  rcases List.eq_nil_or_concat' γ with rfl | ⟨γ', x, rfl⟩
+  · obtain ⟨rfl, h2⟩ := List.append_inj' he.symm rfl
+    simp only [List.cons.injEq, and_true] at h2
+    subst h2
+    exact hℓ q
+  · have : α ++ [ℓ] = (β ++ ℓ' :: γ') ++ [x] := by rw [he]; simp
+    obtain ⟨h1, -⟩ := List.append_inj' this rfl
+    exact hα β ℓ' γ' h1 q
+
+/-- Appending an invocation of a process without pending operation keeps a history well
+formed. -/
+lemma WellFormed.append_inv {α : List (Label P A)} {p : P} {o : A.Op} (hα : WellFormed α)
+    (hp : (opsOf α p).length = (respsOf α p).length) : WellFormed (α ++ [.inv p o]) := by
+  refine hα.append_singleton (fun q => ⟨fun h => ?_, fun h => by simp at h⟩)
+  by_cases hq : p = q
+  · subst hq; exact hp
+  · simp [hq] at h
+
+/-- Appending a response of a process with a pending operation keeps a history well formed. -/
+lemma WellFormed.append_ret {α : List (Label P A)} {p : P} {r : A.Resp} (hα : WellFormed α)
+    (hp : (opsOf α p).length = (respsOf α p).length + 1) : WellFormed (α ++ [.ret p r]) := by
+  refine hα.append_singleton (fun q => ⟨fun h => by simp at h, fun h => ?_⟩)
+  by_cases hq : p = q
+  · subst hq; exact hp
+  · simp [hq] at h
+
+/-- Real-time order towards an operation invoked before an extension is unchanged. -/
+lemma precedes_append_iff_of_invoked {α β : List (Label P A)} {a b : OpId P}
+    (hb : Invoked α b) : Precedes (α ++ β) a b ↔ Precedes α a b :=
+  ⟨fun h => h.of_append_of_invoked hb, Precedes.mono⟩
+
+/-- The operations preceding a new invocation are exactly the completed ones. -/
+lemma precedes_append_inv_iff {α : List (Label P A)} {p : P} {o : A.Op} {y : OpId P} :
+    Precedes (α ++ [.inv p o]) y (p, (opsOf α p).length) ↔ Completed α y := by
+  constructor
+  · rintro ⟨β, γ, he, hc, hni⟩
+    rcases List.prefix_or_prefix_of_prefix (l₃ := α ++ [.inv p o]) ⟨γ, he.symm⟩
+      (List.prefix_append α [.inv p o]) with hp | hp
+    · obtain ⟨δ, rfl⟩ := hp; exact hc.mono
+    · obtain ⟨δ, rfl⟩ := hp
+      rcases δ with _ | ⟨z, δ⟩
+      · simpa using hc
+      · simp only [append_assoc, cons_append, append_cancel_left_eq, cons.injEq, nil_eq,
+          append_eq_nil_iff] at he
+        obtain ⟨rfl, -, -⟩ := he
+        exact absurd (by simp [Invoked]) hni
+  · intro hc
+    exact ⟨α, [.inv p o], rfl, hc, by simp [Invoked]⟩
+
+/-- Once `b` is invoked while `a` is still pending, `a` never precedes `b`. -/
+lemma Precedes.not_of_invoked {α β : List (Label P A)} {a b : OpId P} (hb : Invoked α b)
+    (ha : ¬ Completed α a) : ¬ Precedes (α ++ β) a b := by
+  rintro ⟨β₁, γ, hsplit, h1, h2⟩
+  rcases List.append_eq_append_iff.1 hsplit with ⟨a', rfl, -⟩ | ⟨c', rfl, -⟩
+  · exact h2 hb.mono
+  · exact ha h1.mono
+
+lemma completed_iff_respOf {α : List (Label P A)} {x : OpId P} :
+    Completed α x ↔ (respOf α x).isSome := by
+  simp [Completed, respOf]
+
+/-- The responses after `p` returns `r`: the current instance of `p` gets the response `r`. -/
+lemma respOf_append_ret (α : List (Label P A)) (p : P) (r : A.Resp) (y : OpId P) :
+    respOf (α ++ [.ret p r]) y =
+      if y = (p, (respsOf α p).length) then some r else respOf α y := by
+  obtain ⟨q, k⟩ := y
+  simp only [respOf, respsOf_append, respsOf_cons, Label.retOf_ret, respsOf_nil, append_nil,
+    Prod.mk.injEq]
+  by_cases hq : p = q
+  · subst hq
+    simp only [ite_true, Option.toList_some, true_and]
+    rcases lt_trichotomy k (respsOf α p).length with h | rfl | h
+    · rw [getElem?_append_left h, ite_eq_right (by omega)]
+    · simp
+    · rw [ite_eq_right (by omega), getElem?_eq_none (by simp; omega), getElem?_eq_none (by omega)]
+  · simp [hq, Ne.symm hq]
 
 end Cslib.SharedMemory
