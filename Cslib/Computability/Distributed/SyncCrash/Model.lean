@@ -10,6 +10,7 @@ public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Order.SuccPred.Nat
+public import Cslib.Foundations.Data.Finset.Quorum
 
 /-!
 # The synchronous crash-failure model (`γ_f`), knowledge and message chains
@@ -107,12 +108,9 @@ lemma Admissible.alive_zero [Fintype P] {f : ℕ} (h : r.Admissible f) (p : P) :
 /-- In `γ_f` with `f < n` some process is correct. -/
 lemma Admissible.exists_correct [Fintype P] {f : ℕ} (h : r.Admissible f)
     (hf : f < Fintype.card P) : ∃ p, ¬ r.Faulty p := by
-  by_contra hc
-  push Not at hc
-  have : r.faulty = Finset.univ := by ext p; simp [hc p]
-  have := h.1
-  simp_all only [Finset.card_univ]
-  omega
+  obtain ⟨p, -, hp⟩ := Finset.exists_mem_notMem_of_card_le_of_lt (s := Finset.univ) h.1
+    (by rwa [Finset.card_univ])
+  exact ⟨p, by simpa using hp⟩
 
 end Run
 
