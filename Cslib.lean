@@ -110,6 +110,7 @@ public import Cslib.Computability.Distributed.ContentOblivious.Mirror
 public import Cslib.Computability.Distributed.ContentOblivious.Model
 public import Cslib.Computability.Distributed.ContentOblivious.Prog
 public import Cslib.Computability.Distributed.ContentOblivious.Splice
+public import Cslib.Computability.Distributed.ContentOblivious.Staged
 public import Cslib.Computability.Distributed.ContentOblivious.VirtualRing
 public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
 public import Cslib.Computability.Distributed.CrashPartialSync.Model
