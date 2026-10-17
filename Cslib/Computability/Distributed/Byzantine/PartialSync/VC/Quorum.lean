@@ -37,19 +37,19 @@ theorem cnt_le_card (f : P → Prop) : cnt f ≤ Fintype.card P := by
   exact Set.ncard_le_ncard (Set.subset_univ _) (Set.toFinite _)
 
 omit [DecidableEq P] in
+/-- `cnt` as the cardinality of a filtered `Finset.univ`. -/
+theorem cnt_eq_card_filter (f : P → Prop) [DecidablePred f] : cnt f = #(univ.filter f) := by
+  rw [cnt, Set.ncard_eq_toFinset_card', Set.toFinset_ofPred]
+
+omit [DecidableEq P] in
 /-- Two large sets intersect. -/
 theorem exists_of_cnt_add {f g : P → Prop} (h : Fintype.card P < cnt f + cnt g) :
     ∃ q, f q ∧ g q := by
-  by_contra hc
-  push Not at hc
-  have hd : Disjoint {q | f q} {q | g q} := by
-    rw [Set.disjoint_left]; intro q h1 h2; exact hc q h1 h2
-  have h1 := Set.ncard_union_eq hd (Set.toFinite _) (Set.toFinite _)
-  have h2 := cnt_le_card (fun q => f q ∨ g q)
-  unfold cnt at h h2
-  have : {q | f q ∨ g q} = {q | f q} ∪ {q | g q} := rfl
-  rw [this, h1] at h2
-  omega
+  classical
+  rw [cnt_eq_card_filter, cnt_eq_card_filter] at h
+  obtain ⟨q, hq⟩ := inter_nonempty_of_card_univ_lt_card_add_card h
+  simp only [mem_inter, mem_filter, mem_univ, true_and] at hq
+  exact ⟨q, hq⟩
 
 omit [Fintype P] [DecidableEq P] in
 theorem exists_of_cnt_pos {f : P → Prop} (h : 0 < cnt f) : ∃ q, f q :=
@@ -73,9 +73,11 @@ theorem cnt_correct (f : P → Prop) : cnt f - F.card ≤ cnt (fun q => q ∉ F 
 
 omit [DecidableEq P] in
 theorem cnt_correct_all : cnt (fun q : P => q ∉ F) = Fintype.card P - F.card := by
-  unfold cnt
-  have : {q : P | q ∉ F} = ((F : Set P))ᶜ := rfl
-  rw [this, Set.ncard_compl, Set.ncard_coe_finset, ← Nat.card_eq_fintype_card]
+  classical
+  rw [cnt_eq_card_filter, ← card_compl]
+  congr 1
+  ext q
+  simp
 
 /-! ### Prepare quorums -/
 
