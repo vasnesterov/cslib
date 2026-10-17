@@ -132,6 +132,7 @@ public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
 public import Cslib.Computability.Distributed.PortNumbering.Basic
 public import Cslib.Computability.Distributed.SelfStabilization.Defs
+public import Cslib.Computability.Distributed.SelfStabilization.Markov
 public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
 public import Cslib.Computability.Distributed.SelfStabilization.TransitionSystem
 public import Cslib.Computability.Distributed.SelfStabilization.Unison
