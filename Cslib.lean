@@ -61,6 +61,8 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.SelfStabilization.Markov
+public import Cslib.Computability.Distributed.SelfStabilization.TransitionSystem
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
@@ -253,6 +255,7 @@ public import Cslib.MachineLearning.PACLearning.Defs
 public import Cslib.MachineLearning.PACLearning.VCDimension
 public import Cslib.MachineLearning.PACLearning.VersionSpace
 public import Cslib.MachineLearning.PACLearning.VersionSpaceLattice
+public import Cslib.Probability.Markov.Absorption
 public import Cslib.Probability.PMF
 public import Cslib.Probability.StatisticalDistance
 public import Cslib.Tactic.GrindAttrs
