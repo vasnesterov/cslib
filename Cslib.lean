@@ -80,6 +80,7 @@ public import Cslib.Computability.Distributed.Byzantine.LockStep.Sequential
 public import Cslib.Computability.Distributed.Byzantine.LockStepToPartialSync
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.BinaryConsensus
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Computable
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Containment
