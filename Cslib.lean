@@ -72,6 +72,7 @@ public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
+public import Cslib.Computability.Distributed.Byzantine.LockStep.GroupSim
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Parallel
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Relabel
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Relay
