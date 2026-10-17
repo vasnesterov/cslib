@@ -169,6 +169,7 @@ public import Cslib.Computability.Distributed.SelfStabilization.StoneAge
 public import Cslib.Computability.Distributed.SelfStabilization.TransitionSystem
 public import Cslib.Computability.Distributed.SelfStabilization.Unison
 public import Cslib.Computability.Distributed.SharedMemory.Anonymous
+public import Cslib.Computability.Distributed.SharedMemory.Anonymous.LockStep
 public import Cslib.Computability.Distributed.SharedMemory.Atomic
 public import Cslib.Computability.Distributed.SharedMemory.BinaryReduction
 public import Cslib.Computability.Distributed.SharedMemory.Consensus
