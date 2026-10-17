@@ -53,6 +53,12 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.ContentOblivious.Compose
+public import Cslib.Computability.Distributed.ContentOblivious.Lockstep
+public import Cslib.Computability.Distributed.ContentOblivious.Mirror
+public import Cslib.Computability.Distributed.ContentOblivious.Model
+public import Cslib.Computability.Distributed.ContentOblivious.Prog
+public import Cslib.Computability.Distributed.ContentOblivious.VirtualRing
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
@@ -141,6 +147,7 @@ public import Cslib.Foundations.Data.PFunctor.Free.Fold
 public import Cslib.Foundations.Data.PFunctor.Free.W
 public import Cslib.Foundations.Data.Set.Saturation
 public import Cslib.Foundations.Data.StackTape
+public import Cslib.Foundations.Data.ZMod.Cyclic
 public import Cslib.Foundations.Lint.Basic
 public import Cslib.Foundations.Logic.InferenceSystem
 public import Cslib.Foundations.Logic.LogicalEquivalence
