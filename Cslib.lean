@@ -321,6 +321,7 @@ public import Cslib.Foundations.Data.Nat.Asymptotics
 public import Cslib.Foundations.Data.Nat.CeilDiv
 public import Cslib.Foundations.Data.Nat.Descent
 public import Cslib.Foundations.Data.Nat.Factorial
+public import Cslib.Foundations.Data.Nat.Growth
 public import Cslib.Foundations.Data.Nat.Log
 public import Cslib.Foundations.Data.Nat.LogStar
 public import Cslib.Foundations.Data.Nat.ModCount
