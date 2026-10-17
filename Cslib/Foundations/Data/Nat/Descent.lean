@@ -36,7 +36,9 @@ in the `∃ T ≥ N, ∀ m ≥ T, …` form of `Nat.eventually_const_of_succ_le`
 * `Nat.eventually_of_imp_succ`: a property preserved from `N` on that holds once (at a time `≥ N`)
   holds from then on;
 * `Nat.eventually_forall_of_finite`: finitely many "eventually forever" properties hold
-  simultaneously from some time on; `Finite.exists_forall_of_monotone`,
+  simultaneously from some time on; `Nat.eventually_forall_of_imp_succ`: if finitely many
+  properties persist from `N` on and each holds once, they all hold from some time on;
+  `Finite.exists_forall_of_monotone`,
   `Set.Finite.exists_forall_of_monotone`: finitely many monotone properties of times, each true at
   some time, are all true at a common time;
 * `WellFoundedLT.eventually_const_of_succ_le`, `WellFoundedGT.eventually_const_of_le_succ`: an
@@ -46,10 +48,32 @@ in the `∃ T ≥ N, ∀ m ≥ T, …` form of `Nat.eventually_const_of_succ_le`
   bounded cardinality is eventually constant (`Finset.eventually_const_of_subset_succ_of_finite`
   when the ambient type is finite);
 * `Int.exists_eq_and_succ_eq_of_le_add_one`: the discrete intermediate value theorem for integer
-  sequences that increase by at most one per step.
+  sequences that increase by at most one per step;
+* `Nat.Icc_induction_down`, `Nat.Icc_induction_up`: backward and forward induction on an interval
+  `[a, b]`; `Nat.exists_first_Ioc`: the first time in `(s, B]` at which a property holds.
+
+`Nat.eventually_const_of_succ_le` is the `ℕ` instance of
+`WellFoundedLT.eventually_const_of_succ_le`.
 -/
 
 @[expose] public section
+
+/-- A sequence in a well-founded order that is non-increasing from `N` on is eventually
+constant. -/
+theorem WellFoundedLT.eventually_const_of_succ_le {α : Type*} [PartialOrder α] [WellFoundedLT α]
+    {f : ℕ → α} {N : ℕ} (h : ∀ m ≥ N, f (m + 1) ≤ f m) : ∃ T ≥ N, ∀ m ≥ T, f m = f T := by
+  obtain ⟨n, hn⟩ := WellFoundedLT.antitone_chain_condition (f := fun k => f (N + k))
+    (antitone_nat_of_succ_le fun k => h (N + k) (by omega))
+  refine ⟨N + n, by omega, fun m hm => ?_⟩
+  have := hn (m - N) (by omega)
+  rw [show N + (m - N) = m by omega] at this
+  exact this.symm
+
+/-- A sequence in a co-well-founded order that is non-decreasing from `N` on is eventually
+constant. -/
+theorem WellFoundedGT.eventually_const_of_le_succ {α : Type*} [PartialOrder α] [WellFoundedGT α]
+    {f : ℕ → α} {N : ℕ} (h : ∀ m ≥ N, f m ≤ f (m + 1)) : ∃ T ≥ N, ∀ m ≥ T, f m = f T :=
+  WellFoundedLT.eventually_const_of_succ_le (α := αᵒᵈ) h
 
 namespace Nat
 
@@ -57,13 +81,8 @@ variable {f : ℕ → ℕ} {N : ℕ}
 
 /-- A sequence of natural numbers that is non-increasing from `N` on is eventually constant. -/
 theorem eventually_const_of_succ_le (h : ∀ m ≥ N, f (m + 1) ≤ f m) :
-    ∃ T ≥ N, ∀ m ≥ T, f m = f T := by
-  obtain ⟨n, hn⟩ := WellFoundedLT.antitone_chain_condition (f := fun k => f (N + k))
-    (antitone_nat_of_succ_le fun k => h (N + k) (by omega))
-  refine ⟨N + n, by omega, fun m hm => ?_⟩
-  have := hn (m - N) (by omega)
-  rw [show N + (m - N) = m by omega] at this
-  exact this.symm
+    ∃ T ≥ N, ∀ m ≥ T, f m = f T :=
+  WellFoundedLT.eventually_const_of_succ_le h
 
 /-- A sequence of natural numbers that is non-increasing from `N` on and strictly decreases at
 every index `m ≥ N` satisfying `p m` satisfies `p` only finitely often. -/
@@ -140,6 +159,51 @@ theorem eventually_forall_of_finite {ι : Type*} [Finite ι] {p : ι → ℕ →
   obtain ⟨T, hT⟩ := Filter.eventually_atTop.1 hev
   exact ⟨max N T, le_max_left _ _, fun m hm => (hT m (le_of_max_le_right hm)).2⟩
 
+/-- If, after time `T0`, the property `P t x` persists for every member `x` of a finite type, and
+every `x` eventually satisfies it, then from some time `T ≥ T0` on all `x` satisfy it. -/
+theorem eventually_forall_of_imp_succ {A : Type*} [Finite A] {P : ℕ → A → Prop} (T0 : ℕ)
+    (hpers : ∀ t ≥ T0, ∀ x, P t x → P (t + 1) x) (hev : ∀ x, ∃ t ≥ T0, P t x) :
+    ∃ T ≥ T0, ∀ t ≥ T, ∀ x, P t x :=
+  eventually_forall_of_finite (p := fun x t => P t x)
+    (fun x => (eventually_of_imp_succ (fun t ht => hpers t ht x) (hev x)).imp fun _ h => h.2) T0
+
+/-- **Backward induction on an interval.** If `P b` holds and `P (s + 1)` implies `P s` for
+`a ≤ s < b`, then `P` holds on `[a, b]`. -/
+theorem Icc_induction_down {P : ℕ → Prop} {a b : ℕ} (hb : P b)
+    (h : ∀ s, a ≤ s → s < b → P (s + 1) → P s) : ∀ s, a ≤ s → s ≤ b → P s := by
+  have key : ∀ n s, s + n = b → a ≤ s → P s := by
+    intro n
+    induction n with
+    | zero => intro s hs _; simpa [← hs] using hb
+    | succ n ih => intro s hs has; exact h s has (by omega) (ih (s + 1) (by omega) (by omega))
+  intro s hs hsb
+  exact key (b - s) s (by omega) hs
+
+/-- **Forward induction on an interval.** If `P a` holds and `P s` implies `P (s + 1)` for
+`a ≤ s < b`, then `P` holds on `[a, b]`. -/
+theorem Icc_induction_up {P : ℕ → Prop} {a b : ℕ} (ha : P a)
+    (h : ∀ s, a ≤ s → s < b → P s → P (s + 1)) : ∀ s, a ≤ s → s ≤ b → P s := by
+  intro s hs hsb
+  induction s, hs using Nat.le_induction with
+  | base => exact ha
+  | succ n hn ih => exact h n hn (by omega) (ih (by omega))
+
+/-- **First time in `(s, B]`.** If `Q` fails at `s` and holds somewhere in `(s, B]`, then there
+is a last time `r ≥ s` before the first time `r + 1 ≤ B` at which `Q` holds: `Q` fails on
+`[s, r]` and holds at `r + 1`. -/
+theorem exists_first_Ioc {Q : ℕ → Prop} {s B : ℕ} (h0 : ¬ Q s)
+    (h : ∃ s1, s < s1 ∧ s1 ≤ B ∧ Q s1) :
+    ∃ r, s ≤ r ∧ r + 1 ≤ B ∧ ¬ Q r ∧ Q (r + 1) ∧ ∀ r', s ≤ r' → r' ≤ r → ¬ Q r' := by
+  classical
+  obtain ⟨hs1, hs2, hs3⟩ := Nat.find_spec h
+  obtain ⟨r, hr⟩ : ∃ r, Nat.find h = r + 1 := ⟨Nat.find h - 1, by omega⟩
+  have hmin : ∀ r', s ≤ r' → r' ≤ r → ¬ Q r' := by
+    intro r' h1 h2 hq
+    rcases Nat.eq_or_lt_of_le h1 with he | hlt
+    · subst he; exact h0 hq
+    · exact Nat.find_min h (show r' < Nat.find h by omega) ⟨hlt, by omega, hq⟩
+  exact ⟨r, by omega, by omega, hmin r (by omega) le_rfl, hr ▸ hs3, hmin⟩
+
 end Nat
 
 section Monotone
@@ -160,23 +224,6 @@ theorem Finite.exists_forall_of_monotone [Finite ι] (hp : ∀ i, Monotone (p i)
   simpa using Set.finite_univ.exists_forall_of_monotone (fun i _ => hp i) fun i _ => h i
 
 end Monotone
-
-/-- A sequence in a well-founded order that is non-increasing from `N` on is eventually
-constant. -/
-theorem WellFoundedLT.eventually_const_of_succ_le {α : Type*} [PartialOrder α] [WellFoundedLT α]
-    {f : ℕ → α} {N : ℕ} (h : ∀ m ≥ N, f (m + 1) ≤ f m) : ∃ T ≥ N, ∀ m ≥ T, f m = f T := by
-  obtain ⟨n, hn⟩ := WellFoundedLT.antitone_chain_condition (f := fun k => f (N + k))
-    (antitone_nat_of_succ_le fun k => h (N + k) (by omega))
-  refine ⟨N + n, by omega, fun m hm => ?_⟩
-  have := hn (m - N) (by omega)
-  rw [show N + (m - N) = m by omega] at this
-  exact this.symm
-
-/-- A sequence in a co-well-founded order that is non-decreasing from `N` on is eventually
-constant. -/
-theorem WellFoundedGT.eventually_const_of_le_succ {α : Type*} [PartialOrder α] [WellFoundedGT α]
-    {f : ℕ → α} {N : ℕ} (h : ∀ m ≥ N, f m ≤ f (m + 1)) : ∃ T ≥ N, ∀ m ≥ T, f m = f T :=
-  WellFoundedLT.eventually_const_of_succ_le (α := αᵒᵈ) h
 
 namespace Finset
 
