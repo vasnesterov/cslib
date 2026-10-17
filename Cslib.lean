@@ -63,6 +63,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Examples
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Log
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Model
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
