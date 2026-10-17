@@ -215,6 +215,7 @@ public import Cslib.Foundations.Combinatorics.IsolationLemma
 public import Cslib.Foundations.Combinatorics.Labelling
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Arboricity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Cycle
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Girth
