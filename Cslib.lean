@@ -55,6 +55,8 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.ApproxConsensus.Async.Model
+public import Cslib.Computability.Distributed.ApproxConsensus.Async.Replay
 public import Cslib.Computability.Distributed.ApproxConsensus.DigraphConditions
 public import Cslib.Computability.Distributed.ApproxConsensus.Iterative
 public import Cslib.Computability.Distributed.ApproxConsensus.Trim
