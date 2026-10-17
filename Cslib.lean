@@ -82,6 +82,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.BinaryConsensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Consensus
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Containment
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.DolevStrong
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Examples
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.FLM
@@ -97,6 +98,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Rounds
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.RunClasses
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sim
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sync
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Triviality
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.TwoStepLowerBound
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Defs
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Liveness
