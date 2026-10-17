@@ -61,6 +61,17 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.SharedMemory.History
+public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Objects.FetchAdd
+public import Cslib.Computability.Distributed.SharedMemory.Objects.LLSC
+public import Cslib.Computability.Distributed.SharedMemory.Objects.MaxRegister
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Queue
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Snapshot
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Swap
+public import Cslib.Computability.Distributed.SharedMemory.Objects.TestAndSet
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Window
+public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
