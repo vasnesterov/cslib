@@ -91,19 +91,6 @@ lemma firstUpTo_eq_none_of_lt {f : ℕ → Option O} {r : ℕ} (hmin : ∀ r' < 
 
 end FirstUpTo
 
-/-! ### Histories are prefixes of each other -/
-
-lemma take_hist {P I M O : Type*} (G : SimpleGraph P) (alg : Protocol P I M O)
-    (s : Scenario P I M) {j R : ℕ} (hj : j ≤ R) (p : P) :
-    (hist G alg s R p).take j = hist G alg s j p := by
-  induction R with
-  | zero => rw [Nat.le_zero.1 hj]; rfl
-  | succ R ih =>
-    rcases Nat.lt_or_eq_of_le hj with hj | rfl
-    · rw [hist_succ, List.take_append_of_le_length (by simpa using Nat.lt_succ_iff.1 hj),
-        ih (Nat.lt_succ_iff.1 hj)]
-    · exact List.take_of_length_le (by simp)
-
 /-! ### Collecting a family of options -/
 
 section AllSome
