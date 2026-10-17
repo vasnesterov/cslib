@@ -61,6 +61,9 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.Local.ColorReduction
+public import Cslib.Computability.Distributed.Local.Identifiers
+public import Cslib.Computability.Distributed.Local.LocallyIterative
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
@@ -114,6 +117,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Scheme
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
@@ -127,8 +131,10 @@ public import Cslib.Foundations.Data.FinFun.Update
 public import Cslib.Foundations.Data.HasFresh
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Cslib.Foundations.Data.Nat.Asymptotics
+public import Cslib.Foundations.Data.Nat.Descent
 public import Cslib.Foundations.Data.Nat.Factorial
 public import Cslib.Foundations.Data.Nat.Segment
+public import Cslib.Foundations.Data.Nat.TimeRec
 public import Cslib.Foundations.Data.OmegaSequence.Defs
 public import Cslib.Foundations.Data.OmegaSequence.Flatten
 public import Cslib.Foundations.Data.OmegaSequence.InfOcc
