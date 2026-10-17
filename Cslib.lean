@@ -70,10 +70,12 @@ public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
 public import Cslib.Computability.Distributed.SharedMemory.Mutex
+public import Cslib.Computability.Distributed.SharedMemory.OneAccess
 public import Cslib.Computability.Distributed.SharedMemory.Potential
 public import Cslib.Computability.Distributed.SharedMemory.Progress
 public import Cslib.Computability.Distributed.SharedMemory.Solo
 public import Cslib.Computability.Distributed.SharedMemory.Spec
+public import Cslib.Computability.Distributed.SharedMemory.StrongLin
 public import Cslib.Computability.Distributed.SharedMemory.Task
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
