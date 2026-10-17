@@ -59,6 +59,10 @@ automata); this is a harmless generalization of "the step that returns also acce
   `Impl.invariant_of_run` (invariants of reachable configurations), `Impl.Reachable.step`;
 * `Impl.pend_none_of_opsOf_nil`, `Impl.run_pend_curOp`: a pending operation is the current
   instance of its process, invoked and not completed;
+* consequences of the counting invariant `Impl.run_counts`: `Impl.run_resps_le_ops`,
+  `Impl.run_idle_counts`, `Impl.run_pend_counts` (an idle process has as many responses as
+  invocations, a pending one has one more invocation), `Impl.not_invoked_curOp_of_idle`,
+  `Impl.opsOf_ne_nil_of_pend`, `Impl.respsOf_ne_nil_of_idle`;
 * `Impl.exists_linFun_of_run`, `Impl.linearizable_of_run`: choosing a linearization function from
   an invariant of the finite executions.
 
@@ -603,6 +607,48 @@ lemma run_pend_curOp {α : List (Label P A)} {C : Config A B P L} (h : I.run α 
   have := I.run_pend h hp
   rw [List.getLast?_eq_getElem?] at this
   simpa [opOf, hlen] using this
+
+section Idle
+
+variable {α : List (Label P A)} {C : Config A B P L} {p : P}
+
+/-- In an execution, a process has returned at most as often as it has invoked. -/
+lemma run_resps_le_ops (h : I.run α = some C) (p : P) :
+    (respsOf α p).length ≤ (opsOf α p).length := by
+  rcases I.run_counts h p with ⟨_, h2⟩ | ⟨_, h2⟩ <;> omega
+
+/-- An idle process has as many responses as invocations. -/
+lemma run_idle_counts (h : I.run α = some C) (hp : C.pend p = none) :
+    (opsOf α p).length = (respsOf α p).length := by
+  rcases I.run_counts h p with ⟨-, h2⟩ | ⟨h1, -⟩
+  · exact h2
+  · exact absurd hp h1
+
+/-- A pending process has one more invocation than responses. -/
+lemma run_pend_counts (h : I.run α = some C) (hp : C.pend p ≠ none) :
+    (opsOf α p).length = (respsOf α p).length + 1 := by
+  rcases I.run_counts h p with ⟨h1, -⟩ | ⟨-, h2⟩
+  · exact absurd h1 hp
+  · exact h2
+
+/-- The current instance of an idle process has not been invoked. -/
+lemma not_invoked_curOp_of_idle (h : I.run α = some C) (hp : C.pend p = none) :
+    ¬ Invoked α (curOp α p) := by
+  simp [Invoked, I.run_idle_counts h hp]
+
+/-- A pending process has invoked an operation. -/
+lemma opsOf_ne_nil_of_pend (h : I.run α = some C) (hp : C.pend p ≠ none) : opsOf α p ≠ [] :=
+  fun h0 => hp (I.pend_none_of_opsOf_nil h h0)
+
+/-- An idle process that has invoked an operation has returned. -/
+lemma respsOf_ne_nil_of_idle (h : I.run α = some C) (hp : C.pend p = none)
+    (hops : opsOf α p ≠ []) : respsOf α p ≠ [] := by
+  intro h0
+  have := I.run_idle_counts h hp
+  rw [h0] at this
+  exact hops (List.eq_nil_of_length_eq_zero (by simpa using this))
+
+end Idle
 
 /-! ### Linearization functions from invariants -/
 
