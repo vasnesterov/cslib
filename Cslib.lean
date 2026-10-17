@@ -54,6 +54,9 @@ public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.CommunicationComplexity.Protocol
+public import Cslib.Computability.Distributed.Congest.Gather
+public import Cslib.Computability.Distributed.Congest.LowerBound
+public import Cslib.Computability.Distributed.Congest.Randomized
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
