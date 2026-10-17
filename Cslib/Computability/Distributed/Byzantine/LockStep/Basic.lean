@@ -31,7 +31,18 @@ parties as a finset (`Scenario.honestFinset`); what a round delivers from honest
 senders (`deliver_honest`, `deliver_byz`) and the inboxes of a history (`exists_of_mem_hist`,
 `getElem?_hist`); histories depend only on the send function (`hist_eq_of_send_eq`); first
 decisions (`firstSome_shift`, `firstSome_iff_of_ne`, `firstSome_iff_of_forall`,
-`firstSome_map_iff`) and `firstSome?`, the first `some` value of a sequence.
+`firstSome_map_iff`) and `firstSome?`, the first `some` value of a sequence; histories are
+prefixes of each other (`take_hist`).
+
+Indistinguishability tools:
+* `hist_honest_congr`: the histories of the honest parties only depend on the honest inputs, the
+  omissions between honest parties and the messages of Byzantine parties to honest neighbours.
+* `padScenario G alg s Y`: declare the parties of `Y` Byzantine, but let them send exactly what they
+  send in `s`. The run is unchanged (`hist_padScenario`, `status_padScenario`,
+  `decides_padScenario`) and omissions of the padded parties disappear (`reliable_padScenario`).
+  Used to reach an exact number of faults, or to turn omission faults into Byzantine ones.
+* `decides_iff_of_hist`: a party that has decided within `k` rounds of `s₁` and has the same input
+  and the same history after `k` rounds in `s₂` makes the same (first) decision in `s₂`.
 
 The model is unauthenticated: Byzantine parties may send anything. The authenticated (ideal
 signature) variant is a *restriction* on scenarios and protocols, see
@@ -309,6 +320,18 @@ lemma status_comapInput {I' : Type*} (f : I' → I) (s : Scenario P I' M) (r : �
     status G (alg.comapInput f) s r p = status G alg (s.mapInput f) r p := by
   simp only [status, hist_comapInput]; rfl
 
+/-- Histories are prefixes of each other: the first `j` inboxes after `R ≥ j` rounds are the
+history after `j` rounds. -/
+lemma take_hist {j R : ℕ} (hj : j ≤ R) (p : P) :
+    (hist G alg s R p).take j = hist G alg s j p := by
+  induction R with
+  | zero => rw [Nat.le_zero.1 hj]; rfl
+  | succ R ih =>
+    rcases Nat.lt_or_eq_of_le hj with hj | rfl
+    · rw [hist_succ, List.take_append_of_le_length (by simpa using Nat.lt_succ_iff.1 hj),
+        ih (Nat.lt_succ_iff.1 hj)]
+    · exact List.take_of_length_le (by simp)
+
 end Hist
 
 /-! ### First decisions -/
@@ -390,5 +413,104 @@ lemma isSome_firstSome?_iff : (firstSome? f).isSome ↔ ∃ r, (f r).isSome := b
   · simpa using h
 
 end FirstSome
+
+/-! ### Congruence of honest histories -/
+
+/-- **Congruence of honest histories.** Two scenarios with the same Byzantine parties, the same
+honest inputs, the same omissions between honest parties and the same messages from Byzantine
+parties to honest neighbours give every honest party the same history. -/
+theorem hist_honest_congr {s s' : Scenario P I M} (hbyz : s.byz = s'.byz)
+    (hin : ∀ p ∉ s.byz, s.input p = s'.input p)
+    (hdrop : ∀ r p q, p ∉ s.byz → q ∉ s.byz → G.Adj p q → (s.drop r p q ↔ s'.drop r p q))
+    (hadv : ∀ r b q, b ∈ s.byz → q ∉ s.byz → G.Adj b q → s.adv r b q = s'.adv r b q) :
+    ∀ r, ∀ p ∉ s.byz, hist G alg s r p = hist G alg s' r p := by
+  intro r
+  induction r with
+  | zero => intro p _; rfl
+  | succ r ih =>
+    intro q hq
+    rw [hist_succ, hist_succ, ih q hq]
+    congr 1
+    refine congrArg (fun f => [f]) (funext fun p => ?_)
+    unfold deliver
+    by_cases hadj : G.Adj p q
+    · by_cases hp : p ∈ s.byz
+      · simp [hadj, hp, ← hbyz, hadv r p q hp hq hadj]
+      · have hd := hdrop r p q hp hq hadj
+        by_cases h : s.drop r p q
+        · simp [hadj, hp, ← hbyz, h, hd.1 h]
+        · simp [hadj, hp, ← hbyz, h, mt hd.2 h, hin p hp, ih p hp]
+    · simp [hadj]
+
+/-! ### Padding: Byzantine parties that behave as in a given run -/
+
+section Pad
+
+open Classical in
+/-- Declare the parties of `Y` Byzantine, but let them send exactly the messages they send as
+(honest or Byzantine) parties in `s`. The run is unchanged (`hist_padScenario`). -/
+noncomputable def padScenario (s : Scenario P I M) (Y : Set P) : Scenario P I M where
+  byz := s.byz ∪ Y
+  input := s.input
+  adv r p q := if p ∈ s.byz then s.adv r p q
+    else if s.drop r p q then none else alg.send p (s.input p) (hist G alg s r p) q
+  drop r p q := s.drop r p q ∧ p ∉ Y
+
+/-- Padding does not change the run. -/
+theorem hist_padScenario (s : Scenario P I M) (Y : Set P) :
+    ∀ r, hist G alg (padScenario G alg s Y) r = hist G alg s r := by
+  intro r
+  induction r with
+  | zero => rfl
+  | succ r ih =>
+    funext q
+    rw [hist_succ, hist_succ, ih]
+    congr 2
+    funext p
+    unfold deliver
+    by_cases hp : p ∈ s.byz <;> by_cases hY : p ∈ Y <;> simp [padScenario, hp, hY]
+    all_goals split_ifs <;> simp_all
+
+/-- Omissions by the padded parties disappear: they are now Byzantine sends of nothing. -/
+theorem reliable_padScenario {s : Scenario P I M} {Y : Set P}
+    (h : ∀ r p q, s.drop r p q → p ∈ Y) : (padScenario G alg s Y).Reliable :=
+  fun r p q hd => hd.2 (h r p q hd.1)
+
+/-- Padding does not change the decision status. -/
+theorem status_padScenario (s : Scenario P I M) (Y : Set P) (r : ℕ) (p : P) :
+    status G alg (padScenario G alg s Y) r p = status G alg s r p := by
+  simp only [status, hist_padScenario]
+  rfl
+
+/-- Padding does not change decisions. -/
+theorem decides_padScenario (s : Scenario P I M) (Y : Set P) (p : P) (o : O) :
+    Decides G alg (padScenario G alg s Y) p o ↔ Decides G alg s p o := by
+  simp only [Decides, status_padScenario]
+
+end Pad
+
+/-! ### Decisions determined by a finite history -/
+
+/-- A party that has decided within `k` rounds of `s₁` and has the same input and the same
+history after `k` rounds in `s₂` makes the same (first) decision in `s₂`. -/
+theorem decides_iff_of_hist {s₁ s₂ : Scenario P I M} {p : P} {k : ℕ}
+    (hx : s₁.input p = s₂.input p) (hh : hist G alg s₁ k p = hist G alg s₂ k p)
+    (hdec : ∃ r ≤ k, status G alg s₁ r p ≠ none) (o : O) :
+    Decides G alg s₁ p o ↔ Decides G alg s₂ p o := by
+  have hst : ∀ r ≤ k, status G alg s₁ r p = status G alg s₂ r p := by
+    intro r hr
+    simp only [status, hx, ← take_hist G alg s₁ hr p, ← take_hist G alg s₂ hr p, hh]
+  obtain ⟨r₀, hr₀, hne⟩ := hdec
+  constructor
+  · rintro ⟨r, hr, hlt⟩
+    have hrr : r ≤ r₀ := by
+      by_contra h
+      exact hne (hlt r₀ (by omega))
+    exact ⟨r, (hst r (by omega)).symm ▸ hr, fun r' hr' => (hst r' (by omega)) ▸ hlt r' hr'⟩
+  · rintro ⟨r, hr, hlt⟩
+    have hrr : r ≤ r₀ := by
+      by_contra h
+      exact hne ((hst r₀ hr₀).trans (hlt r₀ (by omega)))
+    exact ⟨r, (hst r (by omega)) ▸ hr, fun r' hr' => (hst r' (by omega)).trans (hlt r' hr')⟩
 
 end Cslib.Byzantine.LockStep
