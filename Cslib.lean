@@ -67,6 +67,7 @@ public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
 public import Cslib.Computability.Distributed.SharedMemory.Progress
+public import Cslib.Computability.Distributed.SharedMemory.Sequential
 public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
