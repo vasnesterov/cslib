@@ -53,6 +53,13 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.Byzantine.KingPhase
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Relabel
+public import Cslib.Computability.Distributed.Byzantine.Specs
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
