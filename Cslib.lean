@@ -55,6 +55,7 @@ public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.Distributed.ContentOblivious.Lockstep
 public import Cslib.Computability.Distributed.ContentOblivious.Model
+public import Cslib.Computability.Distributed.ContentOblivious.Splice
 public import Cslib.Computability.Distributed.ContentOblivious.VirtualRing
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
