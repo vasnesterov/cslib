@@ -53,6 +53,13 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Parallel
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Relabel
+public import Cslib.Computability.Distributed.Byzantine.LockStep.Relay
 public import Cslib.Computability.Distributed.FLP.Algorithm
 public import Cslib.Computability.Distributed.FLP.CanReachVia
 public import Cslib.Computability.Distributed.FLP.Consensus
@@ -124,6 +131,7 @@ public import Cslib.Foundations.Data.BitString
 public import Cslib.Foundations.Data.DecidableEqZero
 public import Cslib.Foundations.Data.FinFun.Basic
 public import Cslib.Foundations.Data.FinFun.Update
+public import Cslib.Foundations.Data.Finset.Quorum
 public import Cslib.Foundations.Data.HasFresh
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Cslib.Foundations.Data.Nat.Asymptotics
