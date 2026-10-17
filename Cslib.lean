@@ -223,6 +223,7 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.GirthExtremal
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Menger
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Orientation
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RandomGreedyMIS
 public import Cslib.Foundations.Combinatorics.SimpleGraph.RootedTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Shortcut
