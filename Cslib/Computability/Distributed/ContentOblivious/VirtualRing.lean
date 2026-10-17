@@ -20,7 +20,10 @@ around, so a lone active node is its own neighbour). Inactive nodes act as relay
 
 Main facts (when some node is active): `act_vnext`, `act_vprev`, `vprev_vnext` and `vnext_vprev`
 (for active `v`: the two maps are inverse bijections of the active set) and `vnext_eq_self_iff`
-(an active node is its own successor iff it is the only active node).
+(an active node is its own successor iff it is the only active node); `vnext_spec` and
+`vprev_spec`: `vnext act v` / `vprev act v` is `v + k` / `v - k` for the least `k ≥ 1` such that
+this node is active; `vprev_eq_neg_vnext_neg`: reflecting the ring `v ↦ -v` exchanges `vnext` and
+`vprev`.
 -/
 
 @[expose] public section
@@ -40,6 +43,13 @@ def vprev (v : ZMod n) : ZMod n :=
   if h : ∃ k, k < n ∧ act (v - ((k + 1 : ℕ) : ZMod n)) = true then
     v - ((Nat.find h + 1 : ℕ) : ZMod n)
   else v
+
+/-- Reflecting the ring `v ↦ -v` exchanges the virtual successor and predecessor. -/
+theorem vprev_eq_neg_vnext_neg (act : ZMod n → Bool) (v : ZMod n) :
+    vprev act v = -vnext (fun w => act (-w)) (-v) := by
+  have e : ∀ k : ℕ, -(-v + (k : ZMod n)) = v - k := fun k => by ring
+  simp only [vprev, vnext, e]
+  split_ifs <;> simp only [neg_add, neg_neg, sub_eq_add_neg]
 
 variable {act} [NeZero n]
 
@@ -138,5 +148,31 @@ lemma vnext_eq_self_iff {v : ZMod n} (hv : act v = true) :
     exact Nat.find_min h (show j - 1 < k by omega) ⟨by omega, hact⟩
   · intro hall
     exact hall _ (act_vnext hv v)
+
+/-- The virtual successor of `v` is `v + k` for the least `k ≥ 1` such that `v + k` is active
+(`k ≤ n`; `k = n` iff `v` is the only active node), provided some node is active. -/
+theorem vnext_spec {u : ZMod n} (hu : act u = true) (v : ZMod n) :
+    ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ vnext act v = v + k ∧ act (v + k) = true ∧
+      ∀ j : ℕ, 0 < j → j < k → act (v + j) = false := by
+  have h := exists_next_active hu v
+  refine ⟨Nat.find h + 1, Nat.succ_pos _, (Nat.find_spec h).1, ?_, (Nat.find_spec h).2,
+    fun j hj hjk => ?_⟩
+  · rw [vnext, dite_eq_left h]
+  · have := Nat.find_min h (show j - 1 < Nat.find h by omega)
+    rw [show j - 1 + 1 = j by omega] at this
+    simpa [show j - 1 < n by have := (Nat.find_spec h).1; omega] using this
+
+/-- The virtual predecessor of `v` is `v - k` for the least `k ≥ 1` such that `v - k` is active
+(`k ≤ n`), provided some node is active. -/
+theorem vprev_spec {u : ZMod n} (hu : act u = true) (v : ZMod n) :
+    ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ vprev act v = v - k ∧ act (v - k) = true ∧
+      ∀ j : ℕ, 0 < j → j < k → act (v - j) = false := by
+  have h := exists_prev_active hu v
+  refine ⟨Nat.find h + 1, Nat.succ_pos _, (Nat.find_spec h).1, ?_, (Nat.find_spec h).2,
+    fun j hj hjk => ?_⟩
+  · rw [vprev, dite_eq_left h]
+  · have := Nat.find_min h (show j - 1 < Nat.find h by omega)
+    rw [show j - 1 + 1 = j by omega] at this
+    simpa [show j - 1 < n by have := (Nat.find_spec h).1; omega] using this
 
 end Cslib.ContentOblivious
