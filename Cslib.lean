@@ -322,6 +322,7 @@ public import Cslib.Foundations.Data.Finset.Card
 public import Cslib.Foundations.Data.Finset.Quorum
 public import Cslib.Foundations.Data.Finset.SumUpdate
 public import Cslib.Foundations.Data.HasFresh
+public import Cslib.Foundations.Data.List.BitEncoding
 public import Cslib.Foundations.Data.List.GreedyScan
 public import Cslib.Foundations.Data.List.IsChainFromTo
 public import Cslib.Foundations.Data.Nat.Asymptotics
