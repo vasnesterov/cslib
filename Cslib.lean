@@ -63,6 +63,8 @@ public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.PopulationProtocols.Basic
 public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
+public import Cslib.Computability.Distributed.PopulationProtocols.Nondet
+public import Cslib.Computability.Distributed.PopulationProtocols.RandomScheduler
 public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
 public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
 public import Cslib.Computability.Distributed.SelfStabilization.TransitionSystem
