@@ -96,6 +96,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Rounds
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.RunClasses
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sim
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Sync
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.TwoStepLowerBound
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Defs
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Liveness
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.VC.Main
