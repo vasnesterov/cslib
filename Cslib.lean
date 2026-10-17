@@ -53,6 +53,7 @@ public import Cslib.Computability.Circuit.Shannon
 public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
+public import Cslib.Computability.Distributed.Byzantine.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Auth
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Basic
