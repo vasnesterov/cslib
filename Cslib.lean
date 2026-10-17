@@ -101,6 +101,9 @@ public import Cslib.Computability.Distributed.ColourSystem.Basic
 public import Cslib.Computability.Distributed.ColourSystem.FreeCoxeter
 public import Cslib.Computability.Distributed.ColourSystem.Graph
 public import Cslib.Computability.Distributed.ColourSystem.MessagePassing
+public import Cslib.Computability.Distributed.Congest.Gather
+public import Cslib.Computability.Distributed.Congest.LowerBound
+public import Cslib.Computability.Distributed.Congest.Randomized
 public import Cslib.Computability.Distributed.CrashPartialSync.Consensus
 public import Cslib.Computability.Distributed.CrashPartialSync.Model
 public import Cslib.Computability.Distributed.DynamicNetworks.Chain
