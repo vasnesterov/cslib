@@ -93,6 +93,7 @@ public import Cslib.Computability.Distributed.Byzantine.PartialSync.Gossip
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.ICSync
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Log
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Map
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Merge
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Model
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Omission
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.QuietRuns
