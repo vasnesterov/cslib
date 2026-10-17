@@ -58,6 +58,7 @@ public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.CommunicationComplexity.Protocol
 public import Cslib.Computability.Distributed.ApproxConsensus.Async.Model
 public import Cslib.Computability.Distributed.ApproxConsensus.Async.Replay
+public import Cslib.Computability.Distributed.ApproxConsensus.Contraction
 public import Cslib.Computability.Distributed.ApproxConsensus.DigraphConditions
 public import Cslib.Computability.Distributed.ApproxConsensus.Iterative
 public import Cslib.Computability.Distributed.ApproxConsensus.Trim
