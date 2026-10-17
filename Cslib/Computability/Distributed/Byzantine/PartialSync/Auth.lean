@@ -7,12 +7,13 @@ Authors: Vasilii Nesterov
 module
 
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.Constructions
+public import Cslib.Computability.Distributed.Byzantine.Auth
 
 /-!
 # Authenticated setting (ideal unforgeable signatures) for the partially synchronous model
 
-Same design as `Cslib.Byzantine.LockStep.Auth` (Byzantine-Stable-Matching agent): signatures are
-abstract *tokens*. Every message `m` carries a set of tokens `Au.tokens m`, every token has a
+Same design as `Cslib.Byzantine.LockStep.Auth`: signatures are abstract *tokens*
+(`Cslib.Byzantine.Auth`). Every message `m` carries a set of tokens `Au.tokens m`, every token has a
 signer `Au.signer x : P`. Unforgeability restricts who may emit a token:
 
 * algorithms (`Algorithm.Unforging`): in every run, a process only sends tokens it signed itself
@@ -38,17 +39,11 @@ open Finset
 
 variable {P M S VI VO K : Type*} [DecidableEq P]
 
-/-- An abstract signature structure on messages. -/
-structure Auth (P M K : Type*) where
-  /-- The signer of a token. -/
-  signer : K → P
-  /-- The signature tokens contained in a message. -/
-  tokens : M → Set K
+/-- An abstract signature structure on messages (the model-independent `Cslib.Byzantine.Auth`). -/
+abbrev Auth (P M K : Type*) := Byzantine.Auth P M K
 
 /-- The trivial signature structure (no tokens): the unauthenticated model. -/
-def Auth.none (P M : Type*) : Auth P M Empty where
-  signer := Empty.elim
-  tokens _ := ∅
+abbrev Auth.none (P M : Type*) : Auth P M Empty := Byzantine.Auth.none P M
 
 namespace Run
 
