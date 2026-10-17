@@ -378,6 +378,8 @@ public import Cslib.MachineLearning.PACLearning.Defs
 public import Cslib.MachineLearning.PACLearning.VCDimension
 public import Cslib.MachineLearning.PACLearning.VersionSpace
 public import Cslib.MachineLearning.PACLearning.VersionSpaceLattice
+public import Cslib.Probability.Finite.Bernoulli
+public import Cslib.Probability.Finite.Product
 public import Cslib.Probability.Finite.Uniform
 public import Cslib.Probability.Markov.Absorption
 public import Cslib.Probability.PMF
