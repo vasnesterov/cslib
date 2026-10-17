@@ -118,6 +118,8 @@ public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
+public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
