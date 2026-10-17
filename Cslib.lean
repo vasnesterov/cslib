@@ -61,6 +61,11 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.PopulationProtocols.Basic
+public import Cslib.Computability.Distributed.PopulationProtocols.Eventually
+public import Cslib.Computability.Distributed.PopulationProtocols.Schedules
+public import Cslib.Computability.Distributed.PopulationProtocols.Symmetrize
+public import Cslib.Computability.Distributed.SelfStabilization.TransitionSystem
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
