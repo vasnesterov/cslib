@@ -212,6 +212,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.Apportionment.Divisor
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.IsolationLemma
+public import Cslib.Foundations.Combinatorics.Labelling
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Arboricity
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
@@ -243,6 +244,7 @@ public import Cslib.Foundations.Data.DecidableEqZero
 public import Cslib.Foundations.Data.FinFun.Basic
 public import Cslib.Foundations.Data.FinFun.Update
 public import Cslib.Foundations.Data.Finset.Quorum
+public import Cslib.Foundations.Data.Finset.SumUpdate
 public import Cslib.Foundations.Data.HasFresh
 public import Cslib.Foundations.Data.List.GreedyScan
 public import Cslib.Foundations.Data.List.IsChainFromTo
