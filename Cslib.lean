@@ -277,6 +277,7 @@ public import Cslib.Foundations.Algebra.BigOperators.Translate
 public import Cslib.Foundations.Algebra.Order.BigOperators.Average
 public import Cslib.Foundations.Analysis.Convex.FirstOrder
 public import Cslib.Foundations.Combinatorics.Apportionment.Divisor
+public import Cslib.Foundations.Combinatorics.Convex.Tverberg
 public import Cslib.Foundations.Combinatorics.Digraph.Walk
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
 public import Cslib.Foundations.Combinatorics.IsolationLemma
