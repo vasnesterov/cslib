@@ -29,6 +29,8 @@ Transport of the token model of signatures (`Auth.lean`) through the round layer
 * `RoundRun.tokens_origin`, `RoundRun.tokens_origin_rcv`: **unforgeability at the round level** —
   a token of a correct signer `s` that is sent or received by a correct process in round `r` was
   sent by `s` itself in some round `≤ r`.
+* `RoundRun.sync_empty_authValid`: without faulty processes, the synchronous round execution
+  respects unforgeability.
 -/
 
 @[expose] public section
@@ -178,5 +180,18 @@ theorem RoundAlgorithm.compile_unforging {RA : RoundAlgorithm P Msg S VI VO} {Au
       have : (r' + 1) * L ≤ τ / L * L := Nat.mul_le_mul_right _ hr'
       rw [Nat.succ_mul] at this; omega
     omega
+
+namespace RoundRun
+
+variable (RA : RoundAlgorithm P Msg S VI VO) (inp : P → VI)
+  (adv : ℕ → (P → S) → P → P → Option Msg)
+
+/-- Without faulty processes, the synchronous execution respects unforgeability. -/
+theorem sync_empty_authValid (Au : Auth P Msg K) : (sync RA ∅ inp adv).AuthValid Au := by
+  intro r p q m _ hm x hx
+  simp only [sync, Finset.notMem_empty, ite_false] at hm
+  exact Or.inr ⟨r, le_rfl, q, Finset.notMem_empty q, p, m, hm, hx⟩
+
+end RoundRun
 
 end Cslib.Byzantine.PartialSync
