@@ -176,6 +176,7 @@ public import Cslib.Computability.Distributed.SharedMemory.Task
 public import Cslib.Computability.Distributed.SharedMemory.Valency
 public import Cslib.Computability.Distributed.SyncCrash.Floodset
 public import Cslib.Computability.Distributed.SyncCrash.Model
+public import Cslib.Computability.Distributed.SyncCrash.System
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
