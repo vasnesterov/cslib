@@ -54,6 +54,7 @@ public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.Distributed.DynamicNetworks.Chain
+public import Cslib.Computability.Distributed.DynamicNetworks.FullInfo
 public import Cslib.Computability.Distributed.DynamicNetworks.HeardOf
 public import Cslib.Computability.Distributed.DynamicNetworks.Journey
 public import Cslib.Computability.Distributed.DynamicNetworks.Product
