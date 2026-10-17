@@ -14,8 +14,9 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
 # BFS trees
 
 A connected graph has, for every root `r`, a rooted spanning tree in which the depth of a vertex
-is its distance to `r` (a BFS tree): the parent of `v ≠ r` is any neighbour one step closer to
-`r`. In particular, if all distances are at most `D`, the tree has depth at most `D`.
+is its distance to `r` (a BFS tree): the parent of `v ≠ r` is a neighbour one step closer to
+`r`, its BFS parent `bfsParent G r v`. In particular, if all distances are at most `D`, the
+tree has depth at most `D`.
 
 ## Main definitions
 
@@ -61,40 +62,6 @@ theorem Connected.exists_adj_dist_succ (hG : G.Connected) (r : V) {v : V} (hv : 
     rw [dist_comm (u := v)] at hp
     simp only [Walk.length_cons] at hp
     omega
-
-/-- The BFS tree of a connected graph rooted at `r`: the depth of `v` is `G.dist r v`, and the
-parent of `v ≠ r` is a neighbour one step closer to `r`. -/
-noncomputable def Connected.bfsTree [DecidableEq V] (hG : G.Connected) (r : V) : G.RootedTree where
-  root := r
-  parent v := if hv : v = r then r else (hG.exists_adj_dist_succ r hv).choose
-  depth v := G.dist r v
-  parent_root := by simp
-  depth_root := dist_self
-  depth_parent v hv := by
-    simp only [hv, ↓reduceDIte]; exact (hG.exists_adj_dist_succ r hv).choose_spec.2
-  adj_parent v hv := by
-    simp only [hv, ↓reduceDIte]; exact (hG.exists_adj_dist_succ r hv).choose_spec.1
-
-@[simp] theorem Connected.bfsTree_root [DecidableEq V] (hG : G.Connected) (r : V) :
-    (hG.bfsTree r).root = r := rfl
-
-@[simp] theorem Connected.bfsTree_depth [DecidableEq V] (hG : G.Connected) (r v : V) :
-    (hG.bfsTree r).depth v = G.dist r v := rfl
-
-/-- A connected graph in which all distances are at most `D` has, for every vertex `r`, a (BFS)
-rooted spanning tree of depth at most `D` rooted at `r`. -/
-theorem exists_rootedTree_root_depthLE (hG : G.Connected) {D : ℕ} (hD : ∀ u v, G.dist u v ≤ D)
-    (r : V) : ∃ T : G.RootedTree, T.root = r ∧ T.DepthLE D := by
-  classical
-  exact ⟨hG.bfsTree r, rfl, fun v => hD r v⟩
-
-/-- A connected graph in which all distances are at most `D` has a (BFS) rooted spanning tree of
-depth at most `D`. -/
-theorem exists_rootedTree_depthLE (hG : G.Connected) {D : ℕ} (hD : ∀ u v, G.dist u v ≤ D) :
-    ∃ T : G.RootedTree, T.DepthLE D := by
-  obtain ⟨r⟩ := hG.nonempty
-  obtain ⟨T, -, hT⟩ := exists_rootedTree_root_depthLE hG hD r
-  exact ⟨T, hT⟩
 
 /-! ### BFS parent pointers without connectivity -/
 
@@ -225,5 +192,42 @@ theorem edist_bfsAncestor_le {h : ℕ} (hx : G.edist r x ≤ h) (i : ℕ) :
   rw [hr.dist_bfsAncestor]
   have := dist_le_of_edist_le_natCast hx
   omega
+
+/-! ### BFS trees of connected graphs -/
+
+/-- The BFS tree of a connected graph rooted at `r`: the depth of `v` is `G.dist r v`, and the
+parent of `v ≠ r` is its BFS parent `G.bfsParent r v`, a neighbour one step closer to `r`. -/
+noncomputable def Connected.bfsTree (hG : G.Connected) (r : V) : G.RootedTree where
+  root := r
+  parent := G.bfsParent r
+  depth v := G.dist r v
+  parent_root := bfsParent_root
+  depth_root := dist_self
+  depth_parent v hv := (hG.preconnected r v).dist_bfsParent_add_one hv
+  adj_parent v hv := (hG.preconnected r v).adj_bfsParent hv
+
+@[simp] theorem Connected.bfsTree_root (hG : G.Connected) (r : V) :
+    (hG.bfsTree r).root = r := rfl
+
+@[simp] theorem Connected.bfsTree_depth (hG : G.Connected) (r v : V) :
+    (hG.bfsTree r).depth v = G.dist r v := rfl
+
+/-- The parent pointers of the BFS tree are the BFS parents. -/
+theorem Connected.bfsTree_parent (hG : G.Connected) (r v : V) :
+    (hG.bfsTree r).parent v = G.bfsParent r v := rfl
+
+/-- A connected graph in which all distances are at most `D` has, for every vertex `r`, a (BFS)
+rooted spanning tree of depth at most `D` rooted at `r`. -/
+theorem exists_rootedTree_root_depthLE (hG : G.Connected) {D : ℕ} (hD : ∀ u v, G.dist u v ≤ D)
+    (r : V) : ∃ T : G.RootedTree, T.root = r ∧ T.DepthLE D :=
+  ⟨hG.bfsTree r, rfl, fun v => hD r v⟩
+
+/-- A connected graph in which all distances are at most `D` has a (BFS) rooted spanning tree of
+depth at most `D`. -/
+theorem exists_rootedTree_depthLE (hG : G.Connected) {D : ℕ} (hD : ∀ u v, G.dist u v ≤ D) :
+    ∃ T : G.RootedTree, T.DepthLE D := by
+  obtain ⟨r⟩ := hG.nonempty
+  obtain ⟨T, -, hT⟩ := exists_rootedTree_root_depthLE hG hD r
+  exact ⟨T, hT⟩
 
 end SimpleGraph
