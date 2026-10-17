@@ -193,6 +193,8 @@ public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
 public import Cslib.Computability.Distributed.SharedMemory.Mutex
+public import Cslib.Computability.Distributed.SharedMemory.ObjClasses
+public import Cslib.Computability.Distributed.SharedMemory.ObjClasses.Basic
 public import Cslib.Computability.Distributed.SharedMemory.Objects.FetchAdd
 public import Cslib.Computability.Distributed.SharedMemory.Objects.LLSC
 public import Cslib.Computability.Distributed.SharedMemory.Objects.MaxRegister
