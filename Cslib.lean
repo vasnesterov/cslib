@@ -218,9 +218,11 @@ public import Cslib.Foundations.Combinatorics.SimpleGraph.BFSTree
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
 public import Cslib.Foundations.Combinatorics.SimpleGraph.BlockingSet
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Cycle
+public import Cslib.Foundations.Combinatorics.SimpleGraph.FaultTolerantGreedy
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Girth
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GirthExtremal
 public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedyMIS
+public import Cslib.Foundations.Combinatorics.SimpleGraph.GreedySpanner
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Menger
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Minor
 public import Cslib.Foundations.Combinatorics.SimpleGraph.Orientation
