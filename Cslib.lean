@@ -62,6 +62,7 @@ public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.SharedMemory.Anonymous
+public import Cslib.Computability.Distributed.SharedMemory.Anonymous.LockStep
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Indist
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
