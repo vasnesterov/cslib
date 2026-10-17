@@ -114,6 +114,7 @@ public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
 public import Cslib.Computability.Distributed.Local.ColorReduction
+public import Cslib.Computability.Distributed.Local.Identifiers
 public import Cslib.Computability.Distributed.Local.Linial
 public import Cslib.Computability.Distributed.Local.Locality
 public import Cslib.Computability.Distributed.Local.LocallyIterative
