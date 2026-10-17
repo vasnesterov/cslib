@@ -61,6 +61,11 @@ public import Cslib.Computability.Distributed.FLP.Impossibility
 public import Cslib.Computability.Distributed.FLP.OnePseudoConsensus
 public import Cslib.Computability.Distributed.FLP.PseudoConsensus
 public import Cslib.Computability.Distributed.FLP.ZeroConsensus
+public import Cslib.Computability.Distributed.Local.ColorReduction
+public import Cslib.Computability.Distributed.Local.Locality
+public import Cslib.Computability.Distributed.Local.LocallyIterative
+public import Cslib.Computability.Distributed.Local.OnlineLocal
+public import Cslib.Computability.Distributed.Local.OnlineLocalLocality
 public import Cslib.Computability.Languages.Congruences.Basic
 public import Cslib.Computability.Languages.Congruences.BuchiCongruence
 public import Cslib.Computability.Languages.Congruences.MyhillCongruence
@@ -114,6 +119,9 @@ public import Cslib.Crypto.Protocols.SecretSharing.Scheme
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Ball
+public import Cslib.Foundations.Combinatorics.SimpleGraph.Spanner
+public import Cslib.Foundations.Combinatorics.SimpleGraph.WeightedSpanner
 public import Cslib.Foundations.Control.Monad.Free
 public import Cslib.Foundations.Control.Monad.Free.Effects
 public import Cslib.Foundations.Control.Monad.Free.Fold
