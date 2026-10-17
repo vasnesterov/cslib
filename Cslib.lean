@@ -61,6 +61,7 @@ public import Cslib.Computability.Distributed.ApproxConsensus.Async.Replay
 public import Cslib.Computability.Distributed.ApproxConsensus.DigraphConditions
 public import Cslib.Computability.Distributed.ApproxConsensus.Iterative
 public import Cslib.Computability.Distributed.ApproxConsensus.Trim
+public import Cslib.Computability.Distributed.Byzantine.Auth
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Lemmas
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Liveness
 public import Cslib.Computability.Distributed.Byzantine.CanonicalRounds.Model

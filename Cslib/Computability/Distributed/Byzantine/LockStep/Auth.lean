@@ -7,12 +7,14 @@ Authors: Vasilii Nesterov
 module
 
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Cover
+public import Cslib.Computability.Distributed.Byzantine.Auth
 
 /-!
 # Authenticated setting (ideal unforgeable signatures)
 
-We model ideal signatures abstractly by *tokens*: every message `m : M` contains a set of signature
-tokens `A.tokens m : Set S`, and every token has a signer `A.signer τ : P`. Unforgeability is a
+We model ideal signatures abstractly by *tokens* (`Cslib.Byzantine.Auth`): every message `m : M`
+contains a set of signature tokens `A.tokens m : Set S`, and every token has a signer
+`A.signer τ : P`. Unforgeability is a
 restriction on who may emit a token:
 
 * honest parties (`Protocol.Unforging`): a party only emits tokens it signed itself or tokens that
@@ -31,12 +33,8 @@ purposes (domain separation by typing).
 
 namespace Cslib.Byzantine.LockStep
 
-/-- An abstract signature structure on messages. -/
-structure Auth (P M S : Type*) where
-  /-- The signer of a token. -/
-  signer : S → P
-  /-- The signature tokens contained in a message. -/
-  tokens : M → Set S
+/-- An abstract signature structure on messages (the model-independent `Cslib.Byzantine.Auth`). -/
+abbrev Auth (P M S : Type*) := Byzantine.Auth P M S
 
 variable {P I M O S Q : Type*}
 
@@ -60,9 +58,7 @@ lemma histTokens_append (h₁ h₂ : History P M) :
     · exact ⟨ib, Or.inr hib, rest⟩
 
 /-- The trivial signature structure (no tokens): every protocol is unforging for it. -/
-def none (P M : Type*) : Auth P M Empty where
-  signer := Empty.elim
-  tokens := fun _ => ∅
+abbrev none (P M : Type*) : Auth P M Empty := Byzantine.Auth.none P M
 
 end Auth
 
