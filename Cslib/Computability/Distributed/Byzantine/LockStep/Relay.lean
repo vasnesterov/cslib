@@ -7,6 +7,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Cslib.Computability.Distributed.Byzantine.LockStep.Agreement
+public import Cslib.Foundations.Data.Finset.Quorum
 import Mathlib.Algebra.Ring.Parity
 
 /-!
@@ -105,14 +106,25 @@ noncomputable def majority (R : Finset P) (f : P → Option M) : Option M :=
   if h : ∃ m, R.card < 2 * (R.filter (fun w => f w = some m)).card then some h.choose else none
 
 open Classical in
+/-- `majority` is `Finset.majority?`, the strict-majority selector of
+`Cslib.Foundations.Data.Finset.Quorum`. -/
+lemma majority_eq_majority? [DecidableEq M] (R : Finset P) (f : P → Option M) :
+    majority R f = R.majority? f := by
+  have key : ∀ m, R.card < 2 * (R.filter (fun w => f w = some m)).card ↔
+      R.majority? f = some m := fun m => by
+    rw [Finset.majority?_eq_some_iff, Finset.countEq_def]
+  unfold majority
+  split_ifs with h
+  · exact ((key _).1 (by convert h.choose_spec)).symm
+  · exact (Option.eq_none_iff_forall_ne_some.2 fun m hm => h ⟨m, by convert (key m).2 hm⟩).symm
+
+/-- Two subsets of `R` of total size `> #R` intersect
+(`Finset.inter_nonempty_of_card_lt_card_add_card`). -/
 lemma exists_mem_inter_of_card_lt {R F₁ F₂ : Finset P} (h₁ : F₁ ⊆ R) (h₂ : F₂ ⊆ R)
     (h : R.card < F₁.card + F₂.card) : ∃ w ∈ F₁, w ∈ F₂ := by
-  by_contra hc
-  push Not at hc
-  have hd : Disjoint F₁ F₂ := Finset.disjoint_left.mpr hc
-  have := Finset.card_le_card (Finset.union_subset h₁ h₂)
-  rw [Finset.card_union_of_disjoint hd] at this
-  omega
+  classical
+  obtain ⟨w, hw⟩ := Finset.inter_nonempty_of_card_lt_card_add_card h₁ h₂ h
+  exact ⟨w, (Finset.mem_inter.1 hw).1, (Finset.mem_inter.1 hw).2⟩
 
 open Classical in
 /-- If the parties outside `B` are a strict majority of `R` and all report `m₀`, the majority
@@ -120,40 +132,16 @@ value is `m₀`. -/
 lemma majority_eq {R : Finset P} {B : Set P} {f : P → Option M} {m₀ : Option M}
     (hB : 2 * (R.filter (· ∈ B)).card < R.card) (hf : ∀ w ∈ R, w ∉ B → f w = m₀) :
     majority R f = m₀ := by
-  have hsplit := Finset.card_filter_add_card_filter_not (s := R) (fun w => w ∈ B)
-  set H := R.filter (fun w => w ∉ B) with hHdef
-  have hH : R.card < 2 * H.card := by omega
-  have hHR : H ⊆ R := Finset.filter_subset _ R
-  have key : ∀ m, R.card < 2 * (R.filter (fun w => f w = some m)).card → m₀ = some m := by
-    intro m hm
-    obtain ⟨w, hw1, hw2⟩ := exists_mem_inter_of_card_lt (Finset.filter_subset _ R) hHR
-      (show R.card < (R.filter (fun w => f w = some m)).card + H.card by omega)
-    rw [Finset.mem_filter] at hw1
-    rw [hHdef, Finset.mem_filter] at hw2
-    rw [← hf w hw2.1 hw2.2, hw1.2]
-  unfold majority
-  split_ifs with h
-  · exact (key _ h.choose_spec).symm
-  · cases m₀ with
-    | none => rfl
-    | some m =>
-      exfalso
-      refine h ⟨m, lt_of_lt_of_le hH (Nat.mul_le_mul_left 2 (Finset.card_le_card ?_))⟩
-      intro w hw
-      rw [hHdef, Finset.mem_filter] at hw
-      exact Finset.mem_filter.mpr ⟨hw.1, hf w hw.1 hw.2⟩
+  rw [majority_eq_majority?]
+  have := Finset.card_sdiff_of_subset (Finset.filter_subset (· ∈ B) R)
+  refine Finset.majority?_eq_of_notMem (F := R.filter (· ∈ B)) (by omega) fun w hw hwF => ?_
+  exact hf w hw fun hwB => hwF (Finset.mem_filter.2 ⟨hw, hwB⟩)
 
 open Classical in
 lemma majority_sound {R : Finset P} {f : P → Option M} {m : M} (h : majority R f = some m) :
     ∃ w ∈ R, f w = some m := by
-  unfold majority at h
-  split_ifs at h with hex
-  obtain rfl := Option.some.inj h
-  have hpos : 0 < (R.filter (fun w => f w = some hex.choose)).card := by
-    have := hex.choose_spec; omega
-  obtain ⟨w, hw⟩ := Finset.card_pos.mp hpos
-  rw [Finset.mem_filter] at hw
-  exact ⟨w, hw.1, hw.2⟩
+  rw [majority_eq_majority?] at h
+  exact Finset.exists_mem_of_majority?_eq_some h
 
 /-! ### The compiled protocol -/
 
