@@ -65,9 +65,11 @@ public import Cslib.Computability.Distributed.SharedMemory.Covering
 public import Cslib.Computability.Distributed.SharedMemory.FullInfo
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Indist
+public import Cslib.Computability.Distributed.SharedMemory.Iso
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Iface
 public import Cslib.Computability.Distributed.SharedMemory.Progress
 public import Cslib.Computability.Distributed.SharedMemory.Spec
 public import Cslib.Computability.Distributed.SharedMemory.Task
