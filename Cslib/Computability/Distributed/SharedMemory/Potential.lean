@@ -29,6 +29,10 @@ Termination arguments by a natural-number potential that decreases with the step
   `μ p l` own steps).
 * `Impl.lockFreeOn_of_potential`, `Impl.lockFree_of_potential`: a global potential that decreases
   at every non-response step gives lock-freedom.
+* `Impl.InfExec.exists_act_of_pending`: under fairness, a process that is pending forever acts
+  infinitely often; `Impl.InfExec.false_of_descent`: a measure that never increases from some
+  time on and strictly decreases at every action of a process that is pending forever gives a
+  contradiction (under fairness), the usual termination argument for a process stuck in a loop.
 
 The local potential condition is turned into the configuration one by
 `Impl.potential_step_of_local`, based on `Impl.step_tau_or_other` (a step taken while `p` stays
@@ -233,6 +237,36 @@ theorem lockFree_of_potential (pot : Config A B P L → ℕ)
       pot C' < pot C) : I.LockFree :=
   lockFreeOn_true_iff.1 <|
     I.lockFreeOn_of_potential pot fun α C ℓ C' hα _ hs hr => h α C ℓ C' hα hs hr
+
+/-! ### Processes pending forever in fair executions -/
+
+section PendingForever
+
+variable {I}
+
+/-- Under fairness, a process that is pending from time `T` on acts at some time `≥ t`, for every
+`t ≥ T`. -/
+theorem InfExec.exists_act_of_pending (e : I.InfExec) (hfair : e.Fair) {q : P} {T : ℕ}
+    (hp : ∀ t ≥ T, (e.cfg t).pend q ≠ none) (t : ℕ) (ht : T ≤ t) :
+    ∃ t' ≥ t, (e.lbl t').proc = q := by
+  obtain ⟨t', h1, h2, -⟩ := e.first_act hfair (hp t ht)
+  exact ⟨t', h1, h2⟩
+
+/-- Under fairness, no process `q` can be pending from time `t₀` on if some measure `μ` of times
+does not increase from `t₀` on and strictly decreases at every action of `q`. -/
+theorem InfExec.false_of_descent (e : I.InfExec) (hfair : e.Fair) (q : P) (t₀ : ℕ) (μ : ℕ → ℕ)
+    (hp : ∀ t ≥ t₀, (e.cfg t).pend q ≠ none)
+    (hle : ∀ t ≥ t₀, (e.lbl t).proc ≠ q → μ (t + 1) ≤ μ t)
+    (hlt : ∀ t ≥ t₀, (e.lbl t).proc = q → μ (t + 1) < μ t) : False := by
+  have hmono : ∀ t ≥ t₀, μ (t + 1) ≤ μ t := fun t ht => by
+    by_cases h : (e.lbl t).proc = q
+    · exact (hlt t ht h).le
+    · exact hle t ht h
+  obtain ⟨T, hT, hc⟩ := Nat.eventually_not_of_succ_le hmono hlt
+  obtain ⟨t', ht', hq⟩ := e.exists_act_of_pending hfair hp T hT
+  exact hc t' ht' hq
+
+end PendingForever
 
 end Impl
 
