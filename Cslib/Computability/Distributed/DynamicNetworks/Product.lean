@@ -37,6 +37,8 @@ Schwarz, Schmid; El-Hayek, Henzinger, Schmid).
 
 * `prod_add`, `prod_succ'`: associativity of products.
 * `prod_mono`: with self-loops, products only grow when the interval of rounds grows.
+* `prod_of_inv`: a property preserved by every edge of every round holds along products (forward
+  invariants, "speed of information" arguments).
 * `mem_outNbhd_iff_mem_inNbhd`, `outNbhd_trans`, `inNbhd_mono`, `outNbhd_mono`: basic properties of
   generalized neighbourhoods.
 * `card_inNbhd_lt_of_root_notMem`, `card_outNbhd_lt_of_root_mem`: in a rooted round the
@@ -108,6 +110,20 @@ theorem prod_mono (hG : ∀ i x, G i x x) {a k a' k' : ℕ} (h₁ : a' ≤ a)
   subst he
   have h1 : prod G a' (d + k) x y := prod_trans (prod_refl hG _ _ x) h
   exact prod_trans h1 (prod_refl hG _ _ y)
+
+/-- **Forward invariant along a product of rounds.** If `S 0 x` holds and every edge of round
+`a + k` maps `S k` into `S (k + 1)`, then every vertex reached from `x` by the product of the `k`
+rounds starting at round `a` satisfies `S k`. -/
+theorem prod_of_inv {E : ℕ → α → α → Prop} (S : ℕ → α → Prop) {a : ℕ} {x : α} (h0 : S 0 x)
+    (hstep : ∀ k z y, S k z → E (a + k) z y → S (k + 1) y) :
+    ∀ k y, prod E a k x y → S k y := by
+  intro k
+  induction k with
+  | zero => rintro y rfl; exact h0
+  | succ k ih =>
+    intro y hy
+    obtain ⟨z, hz, hzy⟩ := prod_succ_apply.1 hy
+    exact hstep k z y (ih z hz) hzy
 
 /-! ### Generalized neighbourhoods -/
 
