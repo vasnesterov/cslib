@@ -54,6 +54,7 @@ public import Cslib.Computability.Circuit.Signature
 public import Cslib.Computability.Circuit.Synthesis
 public import Cslib.Computability.Circuit.Wire
 public import Cslib.Computability.Distributed.ContentOblivious.Compose
+public import Cslib.Computability.Distributed.ContentOblivious.Hom
 public import Cslib.Computability.Distributed.ContentOblivious.Lockstep
 public import Cslib.Computability.Distributed.ContentOblivious.Mirror
 public import Cslib.Computability.Distributed.ContentOblivious.Model
