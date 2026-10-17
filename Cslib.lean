@@ -274,6 +274,7 @@ public import Cslib.Crypto.Protocols.SecretSharing.Scheme
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir
 public import Cslib.Crypto.Protocols.SecretSharing.Shamir.Polynomial
 public import Cslib.Foundations.Algebra.BigOperators.Translate
+public import Cslib.Foundations.Algebra.Order.BigOperators.Average
 public import Cslib.Foundations.Combinatorics.Apportionment.Divisor
 public import Cslib.Foundations.Combinatorics.Digraph.Walk
 public import Cslib.Foundations.Combinatorics.InfiniteGraphRamsey
