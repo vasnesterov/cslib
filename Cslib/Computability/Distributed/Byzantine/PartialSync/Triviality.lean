@@ -6,7 +6,7 @@ Authors: Vasilii Nesterov
 
 module
 
-public import Cslib.Computability.Distributed.Byzantine.PartialSync.Auth
+public import Cslib.Computability.Distributed.Byzantine.PartialSync.Merge
 
 /-!
 # Byzantine consensus with `n ≤ 3t` only solves trivial validity properties
@@ -23,7 +23,7 @@ algorithms); the unauthenticated model is the special case `Auth.none`.
   decided in a canonical execution corresponding to `c` is admissible for every input
   configuration similar to `c`.
 * `SolvesConsensusAuth.eq_of_compatible` (merging, Lemma 2 of [CivitEtAl2023]): canonical
-  executions with compatible input configurations decide the same value.
+  executions with compatible input configurations decide the same value (via `Run.merge`).
 * `SolvesConsensusAuth.trivial`, `ValidityProperty.SolvableAuth.trivial`,
   `ValidityProperty.Solvable.trivial` (Theorem 1 of [CivitEtAl2023]): if `0 < t < n ≤ 3t`, every
   solvable validity property is trivial.
@@ -87,105 +87,16 @@ theorem SolvesConsensusAuth.eq_of_compatible (hA : SolvesConsensusAuth Au t δ A
   obtain ⟨w₂, T₂, hw₂⟩ := hA.termination R₂ h₂ ha₂ c hc.1
   obtain rfl : w₂ = v₂ := hA.agreement R₂ h₂ ha₂ c hc.1 p₂ hp₂ w₂ v₂ ⟨T₂, hw₂⟩ hd₂
   set T := max T₁ T₂
-  -- the merged execution
-  let R : Run P M VI :=
-    { faulty := R₁.faultyᶜ ∩ R₂.faultyᶜ
-      inp := fun p => if p ∉ R₁.faulty then R₁.inp p else R₂.inp p
-      gst := T + 1
-      byz := fun q τ p => if τ ≤ T then
-          (if p ∉ R₂.faulty ∧ p ∈ R₁.faulty then R₂.out A q τ p else R₁.out A q τ p) else []
-      dl := fun q τ p => if τ ≤ T then
-          (if q ∉ R₁.faulty ∧ p ∉ R₁.faulty then min (R₁.dl q τ p) (T + 1)
-           else if q ∉ R₂.faulty ∧ p ∉ R₂.faulty then min (R₂.dl q τ p) (T + 1) else T + 1)
-        else τ }
-  have hRf : ∀ p, p ∈ R.faulty ↔ p ∉ R₁.faulty ∧ p ∉ R₂.faulty := by simp [R]
-  have hR : R.Valid t δ := by
-    refine ⟨?_, ?_, ?_⟩
-    · have := hcomp.1
-      rw [Run.procs_inputConf, Run.procs_inputConf, ← filter_and] at this
-      convert this using 2
-      ext p; simp [R]
-    · intro q τ p _ _
-      simp only [R]
-      split_ifs with h0 h1 h2
-      · exact le_min (h₁.dl_ge q τ p h1.1 h1.2) (by omega)
-      · exact le_min (h₂.dl_ge q τ p h2.1 h2.2) (by omega)
-      · omega
-      · exact le_rfl
-    · intro q τ p _ _
-      simp only [R]
-      split_ifs <;> omega
-  -- `π(c₁) \ π(c₂)` cannot distinguish `R` from `R₁` up to `T`
-  have hX₁ : ∀ τ ≤ T, ∀ p ∈ {p | p ∉ R₁.faulty ∧ p ∈ R₂.faulty}, R.st A τ p = R₁.st A τ p := by
-    refine R.st_eq_of_inbox_eq A (ref := fun _ => R₁) ?_ ?_
-    · rintro p ⟨hp, -⟩; simp [R, hp]
-    · rintro τ hτ ih p ⟨hp1, hp2⟩
-      refine R.inbox_eq_of_dlv_eq A fun q τ' hτ' => ?_
-      by_cases hq : q ∈ R₁.faulty
-      · rw [R.dlv_eq_nil_of_ne A (by simp [R, hq, hp2, show τ' ≤ T by omega]; omega)]
-        simp [Run.dlv, Run.out_eq_nil_of_canonical A hc₁ hq]
-      · have hdl : R.dl q τ' p = min (R₁.dl q τ' p) (T + 1) := by
-          simp [R, hq, hp1, show τ' ≤ T by omega]
-        have hiff : (min (R₁.dl q τ' p) (T + 1) = τ) ↔ R₁.dl q τ' p = τ := by omega
-        simp only [Run.dlv, hdl, hiff]
-        split_ifs
-        · by_cases hq2 : q ∈ R₂.faulty
-          · rw [Run.out_of_correct A _ (by simp [hRf, hq2]), Run.out_of_correct A _ hq,
-              ih q ⟨hq, hq2⟩ τ' hτ']
-          · rw [Run.out_of_faulty A _ ((hRf q).2 ⟨hq, hq2⟩)]
-            simp [R, hp2, show τ' ≤ T by omega]
-        · rfl
-  -- `π(c₂) \ π(c₁)` cannot distinguish `R` from `R₂` up to `T`
-  have hX₂ : ∀ τ ≤ T, ∀ p ∈ {p | p ∉ R₂.faulty ∧ p ∈ R₁.faulty}, R.st A τ p = R₂.st A τ p := by
-    refine R.st_eq_of_inbox_eq A (ref := fun _ => R₂) ?_ ?_
-    · rintro p ⟨-, hp⟩; simp [R, hp]
-    · rintro τ hτ ih p ⟨hp2, hp1⟩
-      refine R.inbox_eq_of_dlv_eq A fun q τ' hτ' => ?_
-      by_cases hq : q ∈ R₂.faulty
-      · rw [R.dlv_eq_nil_of_ne A (by simp [R, hq, hp1, show τ' ≤ T by omega]; omega)]
-        simp [Run.dlv, Run.out_eq_nil_of_canonical A hc₂ hq]
-      · have hdl : R.dl q τ' p = min (R₂.dl q τ' p) (T + 1) := by
-          simp [R, hq, hp1, hp2, show τ' ≤ T by omega]
-        have hiff : (min (R₂.dl q τ' p) (T + 1) = τ) ↔ R₂.dl q τ' p = τ := by omega
-        simp only [Run.dlv, hdl, hiff]
-        split_ifs
-        · by_cases hq1 : q ∈ R₁.faulty
-          · rw [Run.out_of_correct A _ (by simp [hRf, hq1]), Run.out_of_correct A _ hq,
-              ih q ⟨hq, hq1⟩ τ' hτ']
-          · rw [Run.out_of_faulty A _ ((hRf q).2 ⟨hq1, hq⟩)]
-            simp [R, hp2, hp1, show τ' ≤ T by omega]
-        · rfl
-  -- the Byzantine processes only replay messages of `R₁` / `R₂` up to `T`
-  have hRa : R.AuthValid Au A := by
-    intro b hb τ r hr m hm x hx
-    simp only [R] at hm
-    split_ifs at hm with hτ hr'
-    · refine Run.tokens_replay hU (Ri := R₂) (T := T) (fun q σ r' hσ => ?_) τ hτ b r m hm x hx
-      by_cases hq : q ∈ R₂.faulty
-      · right; right; intro m' hm'
-        simp [Run.out_eq_nil_of_canonical A hc₂ hq] at hm'
-      · by_cases hq1 : q ∈ R₁.faulty
-        · left
-          have hqR : q ∉ R.faulty := by simp [hRf, hq1]
-          refine ⟨hqR, ?_⟩
-          rw [Run.out_of_correct A _ hqR, Run.out_of_correct A _ hq, hX₂ σ hσ q ⟨hq, hq1⟩]
-        · right; left; exact ⟨(hRf q).2 ⟨hq1, hq⟩, hq⟩
-    · refine Run.tokens_replay hU (Ri := R₁) (T := T) (fun q σ r' hσ => ?_) τ hτ b r m hm x hx
-      by_cases hq : q ∈ R₁.faulty
-      · right; right; intro m' hm'
-        simp [Run.out_eq_nil_of_canonical A hc₁ hq] at hm'
-      · by_cases hq2 : q ∈ R₂.faulty
-        · left
-          have hqR : q ∉ R.faulty := by simp [hRf, hq2]
-          refine ⟨hqR, ?_⟩
-          rw [Run.out_of_correct A _ hqR, Run.out_of_correct A _ hq, hX₁ σ hσ q ⟨hq, hq2⟩]
-        · right; left; exact ⟨(hRf q).2 ⟨hq, hq2⟩, hq⟩
-    · simp at hm
-  have ha' : a ∉ R.faulty := by simp [hRf, ha.2]
-  have hc' : c ∉ R.faulty := by simp [hRf, hc.2]
-  refine hA.agreement R hR hRa a ha' c hc' w₁ w₂ ⟨T₁, ?_⟩ ⟨T₂, ?_⟩
-  · rw [hX₁ T₁ (le_max_left _ _) a ha]; exact hw₁
-  · rw [hX₂ T₂ (le_max_right _ _) c hc]; exact hw₂
+  -- the merged execution: `π(c₁) ∩ π(c₂)` is Byzantine
+  have hcard : (R₁.faultyᶜ ∩ R₂.faultyᶜ).card ≤ t := by
+    have := hcomp.1
+    rw [Run.procs_inputConf, Run.procs_inputConf, ← filter_and] at this
+    convert this using 2
+    ext p; simp
+  refine hA.agreement (R₁.merge A R₂ T) (Run.merge_valid hcard h₁.dl_ge h₂.dl_ge)
+    (Run.merge_authValid hU hc₁ hc₂) a (by simp [ha.2]) c (by simp [hc.2]) w₁ w₂
+    (Run.merge_decides_left hc₁ ha.1 ha.2 (le_max_left _ _) hw₁)
+    (Run.merge_decides_right hc₂ hc.2 hc.1 (le_max_right _ _) hw₂)
 
 /-- **Lemmas 3, 4 and Theorem 1** of [CivitEtAl2023]: if `0 < t < n ≤ 3t`, any validity property
 with which an algorithm solves consensus is trivial. -/
