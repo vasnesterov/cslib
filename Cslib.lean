@@ -193,6 +193,14 @@ public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
 public import Cslib.Computability.Distributed.SharedMemory.Mutex
+public import Cslib.Computability.Distributed.SharedMemory.Objects.FetchAdd
+public import Cslib.Computability.Distributed.SharedMemory.Objects.LLSC
+public import Cslib.Computability.Distributed.SharedMemory.Objects.MaxRegister
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Queue
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Snapshot
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Swap
+public import Cslib.Computability.Distributed.SharedMemory.Objects.TestAndSet
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Window
 public import Cslib.Computability.Distributed.SharedMemory.OneAccess
 public import Cslib.Computability.Distributed.SharedMemory.Potential
 public import Cslib.Computability.Distributed.SharedMemory.Progress
