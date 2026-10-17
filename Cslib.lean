@@ -352,6 +352,7 @@ public import Cslib.Foundations.Data.PFunctor.Free.W
 public import Cslib.Foundations.Data.Real.Logb
 public import Cslib.Foundations.Data.Set.Saturation
 public import Cslib.Foundations.Data.StackTape
+public import Cslib.Foundations.Data.ZMod.Cyclic
 public import Cslib.Foundations.Lint.Basic
 public import Cslib.Foundations.Logic.InferenceSystem
 public import Cslib.Foundations.Logic.LogicalEquivalence
