@@ -9,6 +9,7 @@ module
 public import Cslib.Computability.Distributed.Byzantine.PartialSync.QuietRuns
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Fintype.Prod
+public import Cslib.Foundations.Data.Finset.Quorum
 
 /-!
 # Synchronous executions with omission failures
@@ -180,51 +181,15 @@ theorem st_eq_of_inbox_eq {E E' : OmExec P VI} {X : ℕ → Set P}
 
 /-! ### Counting -/
 
-open Classical in
-/-- Counting lemma: if `X` and `Y` are disjoint, then within some finite time the processes of `X`
-send to processes other than themselves at least as many messages as there are pairs
-`(q, p) ∈ X × Y` such that `q` sends something to `p` at some time. -/
-theorem count_pairs (X Y : Finset P) (hXY : Disjoint X Y) (f : ℕ → P → P → ℕ) :
-    ∃ N, ∑ p ∈ Y, (X.filter fun q => ∃ τ, f τ q p ≠ 0).card ≤
-      ∑ τ ∈ range N, ∑ q ∈ X, ∑ p ∈ univ.filter (· ≠ q), f τ q p := by
-  let τ₀ : P × P → ℕ := fun qp => if hh : ∃ τ, f τ qp.1 qp.2 ≠ 0 then Classical.choose hh else 0
-  let N := (univ : Finset (P × P)).sup τ₀ + 1
-  refine ⟨N, ?_⟩
-  have key : ∀ q p, (if ∃ τ, f τ q p ≠ 0 then 1 else 0) ≤ ∑ τ ∈ range N, f τ q p := by
-    intro q p
-    split_ifs with hh
-    · have hlt : τ₀ (q, p) < N := Nat.lt_succ_of_le (le_sup (f := τ₀) (mem_univ (q, p)))
-      have hτ : τ₀ (q, p) = Classical.choose hh := by simp [τ₀, hh]
-      calc 1 ≤ f (τ₀ (q, p)) q p := by
-              rw [hτ]; exact Nat.one_le_iff_ne_zero.mpr (Classical.choose_spec hh)
-        _ ≤ ∑ τ ∈ range N, f τ q p :=
-              single_le_sum (f := fun τ => f τ q p) (fun _ _ => Nat.zero_le _) (mem_range.mpr hlt)
-    · exact Nat.zero_le _
-  calc ∑ p ∈ Y, (X.filter fun q => ∃ τ, f τ q p ≠ 0).card
-      = ∑ p ∈ Y, ∑ q ∈ X, (if ∃ τ, f τ q p ≠ 0 then 1 else 0) := by
-        refine sum_congr rfl fun p _ => ?_
-        rw [card_eq_sum_ones, sum_filter]
-    _ = ∑ q ∈ X, ∑ p ∈ Y, (if ∃ τ, f τ q p ≠ 0 then 1 else 0) := sum_comm
-    _ ≤ ∑ q ∈ X, ∑ p ∈ univ.filter (· ≠ q), ∑ τ ∈ range N, f τ q p := by
-        refine sum_le_sum fun q hq => ?_
-        calc ∑ p ∈ Y, (if ∃ τ, f τ q p ≠ 0 then 1 else 0)
-            ≤ ∑ p ∈ Y, ∑ τ ∈ range N, f τ q p := sum_le_sum fun p _ => key q p
-          _ ≤ ∑ p ∈ univ.filter (· ≠ q), ∑ τ ∈ range N, f τ q p := by
-              refine sum_le_sum_of_subset_of_nonneg (fun p hp => ?_) fun _ _ _ => Nat.zero_le _
-              refine mem_filter.mpr ⟨mem_univ _, fun h => ?_⟩
-              subst h
-              exact disjoint_left.mp hXY hq hp
-    _ = ∑ τ ∈ range N, ∑ q ∈ X, ∑ p ∈ univ.filter (· ≠ q), f τ q p := by
-        rw [Finset.sum_comm (s := range N)]
-        refine sum_congr rfl fun q _ => ?_
-        rw [Finset.sum_comm (s := range N)]
+@[deprecated Finset.exists_sum_card_filter_exists_ne_zero_le (since := "2026-10-18")]
+alias count_pairs := Finset.exists_sum_card_filter_exists_ne_zero_le
 
 /-- Within some finite time, correct processes send at least `∑_{p ∈ Y} |dropSenders F p|`
 messages, for `Y ⊆ F`. -/
 theorem sum_card_dropSenders_le {F Y : Finset P} (hY : Y ⊆ F) :
     ∃ N, ∑ p ∈ Y, (E.dropSenders A F p).card ≤ E.msgsUpTo A F N := by
   classical
-  obtain ⟨N, hN⟩ := count_pairs (univ.filter (· ∉ F)) Y
+  obtain ⟨N, hN⟩ := Finset.exists_sum_card_filter_exists_ne_zero_le (univ.filter (· ∉ F)) Y
     (by
       rw [disjoint_left]; intro q hq hq'
       simp only [mem_filter, mem_univ, true_and] at hq; exact hq (hY hq'))
