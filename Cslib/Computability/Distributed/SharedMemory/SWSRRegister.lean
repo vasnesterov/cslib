@@ -38,9 +38,9 @@ same write ordered by index). Its final state is the value of the last invoked w
 
 `Impl.isLinFun_swsrLin` packages this for implementations.
 
-Auxiliary general facts about real-time order: `WellFormed.resps_le_ops`, `Precedes.trans`,
-`Precedes.of_append_of_invoked` (stability of `¬ Precedes α a b` once `b` is invoked),
-`Precedes.lt_of_proc` (program order), `Impl.allowed_of_mem_opsOf`.
+The general facts about real-time order used here (`WellFormed.resps_le_ops`,
+`Precedes.trans`, `Precedes.of_append_of_invoked`, `Precedes.lt_of_proc`) are in `History.lean`,
+`Impl.allowed_of_mem_opsOf` is in `Model.lean`.
 
 -/
 
@@ -51,108 +51,6 @@ namespace Cslib.SharedMemory
 open List
 
 variable {P : Type} [DecidableEq P] {A : ObjSpec}
-
-/-! ## General facts on histories -/
-
-/-- In a well-formed history, every prefix has at most one more invocation than responses per
-process, and at least as many. -/
-lemma WellFormed.counts {α β γ : List (Label P A)} (hα : WellFormed α) (h : α = β ++ γ) (p : P) :
-    (respsOf β p).length ≤ (opsOf β p).length ∧
-      (opsOf β p).length ≤ (respsOf β p).length + 1 := by
-  induction β using List.reverseRecOn generalizing γ with
-  | nil => simp
-  | append_singleton β ℓ ih =>
-    have ih' := ih (γ := ℓ :: γ) (by simp [h])
-    have hwf := hα β ℓ γ (by simp [h]) p
-    simp only [opsOf_append, respsOf_append, opsOf_cons, respsOf_cons, opsOf_nil, respsOf_nil,
-      List.append_nil, List.length_append]
-    cases ℓ with
-    | inv q o =>
-      by_cases hq : q = p
-      · subst hq; have := hwf.1 (by simp); simp; omega
-      · simp [hq]; omega
-    | ret q x =>
-      by_cases hq : q = p
-      · subst hq; have := hwf.2 (by simp); simp; omega
-      · simp [hq]; omega
-    | tau q => simp; omega
-
-lemma WellFormed.resps_le_ops {α : List (Label P A)} (hα : WellFormed α) (p : P) :
-    (respsOf α p).length ≤ (opsOf α p).length :=
-  (hα.counts (γ := []) (by simp) p).1
-
-/-- A completed operation has been invoked (well-formed histories). -/
-lemma WellFormed.invoked_of_completed {α : List (Label P A)} (hα : WellFormed α) {x : OpId P}
-    (h : Completed α x) : Invoked α x :=
-  lt_of_lt_of_le h (hα.resps_le_ops x.1)
-
-/-- Real-time order is transitive (well-formed histories). -/
-lemma Precedes.trans {α : List (Label P A)} (hα : WellFormed α) {a b c : OpId P}
-    (h₁ : Precedes α a b) (h₂ : Precedes α b c) : Precedes α a c := by
-  obtain ⟨β₁, γ₁, e₁, ha, hb⟩ := h₁
-  obtain ⟨β₂, γ₂, e₂, hb', hc⟩ := h₂
-  have hb'' : Invoked β₂ b := (hα.counts e₂ b.1).1.trans_lt' hb'
-  rcases List.prefix_or_prefix_of_prefix (l₃ := α) ⟨γ₁, e₁.symm⟩ ⟨γ₂, e₂.symm⟩ with hp | hp
-  · obtain ⟨δ, rfl⟩ := hp
-    exact ⟨_, γ₂, e₂, ha.mono, hc⟩
-  · obtain ⟨δ, rfl⟩ := hp
-    exact absurd hb''.mono hb
-
-/-- If `b` is invoked in `α ++ γ` and `a` precedes `b` there, then `a` has completed... at the
-latest when `b` is invoked; in particular, if `b` is not invoked in `α`, the response of `a` is
-in `α ++ γ` before `b`'s invocation. Special case used most often: `γ = [ℓ]`. -/
-lemma Precedes.completed_of_append_singleton {α : List (Label P A)} {ℓ : Label P A}
-    {a b : OpId P} (h : Precedes (α ++ [ℓ]) a b) (hb : Invoked (α ++ [ℓ]) b) :
-    Completed α a := by
-  obtain ⟨β, γ', e, ha, hnb⟩ := h
-  rcases List.prefix_or_prefix_of_prefix (l₃ := α ++ [ℓ]) ⟨γ', e.symm⟩ (List.prefix_append α [ℓ])
-    with hp | hp
-  · obtain ⟨δ, rfl⟩ := hp
-    exact ha.mono
-  · obtain ⟨δ, hδ⟩ := hp
-    rcases δ with _ | ⟨x, δ⟩
-    · simp only [append_nil] at hδ; subst hδ; exact ha
-    · have : β = α ++ [ℓ] := by
-        have hl := congrArg List.length e
-        have hl2 := congrArg List.length hδ
-        simp at hl hl2
-        obtain ⟨γ'', rfl⟩ : ∃ γ'', γ' = γ'' := ⟨_, rfl⟩
-        have : γ' = [] := by
-          rw [← List.length_eq_zero_iff]; omega
-        simpa [this] using e.symm
-      subst this; exact absurd hb hnb
-
-/-- Program order: an operation of `p` can only precede later operations of `p`. -/
-lemma Precedes.lt_of_proc {α : List (Label P A)} (hα : WellFormed α) {p : P} {i j : ℕ}
-    (h : Precedes α (p, i) (p, j)) : i < j := by
-  obtain ⟨β, γ, e, hi, hj⟩ := h
-  have := (hα.counts e p).1
-  simp only [Completed, Invoked] at hi hj
-  omega
-
-/-- Every operation invoked in an execution is allowed. -/
-lemma Impl.allowed_of_mem_opsOf {ι : Type} [DecidableEq ι] {B : ι → ObjSpec} {L : Type}
-    (I : Impl A B P L) {α : List (Label P A)} (hα : I.Valid α) {p : P} {o : A.Op}
-    (ho : o ∈ opsOf α p) : I.allowed p o := by
-  induction α using List.reverseRecOn with
-  | nil => simp at ho
-  | append_singleton α ℓ ih =>
-    obtain ⟨C, hC⟩ := hα
-    obtain ⟨C₁, h1, h2⟩ := I.runFrom_eq_some_of_append hC
-    rw [Impl.runFrom_singleton] at h2
-    rw [opsOf_append, List.mem_append] at ho
-    rcases ho with ho | ho
-    · exact ih ⟨C₁, h1⟩ ho
-    · cases ℓ with
-      | inv q o' =>
-        by_cases hq : q = p
-        · subst hq
-          simp only [opsOf_cons, Label.invOf_inv, ↓reduceIte, Option.toList_some, opsOf_nil,
-            append_nil, mem_cons, not_mem_nil, or_false] at ho
-          subst ho; exact (Impl.step_inv h2).2.1
-        · simp [hq] at ho
-      | ret q x => simp at ho
-      | tau q => simp at ho
 
 /-! ## Values of a sequence of writes -/
 

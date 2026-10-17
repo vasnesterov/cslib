@@ -32,9 +32,8 @@ completed read right after the write it reads from, reads from the same write in
 order. These are exactly the three "claims" used in atomicity proofs of SWMR register
 algorithms (e.g. Lemma 10 of Mostéfaoui–Raynal, PODC 2016).
 
-Auxiliary: `invIds α` lists the operation instances of `α` in invocation order; real-time order
-implies order in `invIds` (`Precedes.sublist_invIds`); `Precedes.not_of_invoked` (once `b` is
-invoked while `a` is pending, `a` can never precede `b`).
+The invocation order `invIds α` (with `Precedes.sublist_invIds`: real-time order implies
+invocation order) and `Precedes.not_of_invoked` are in `History.lean`.
 -/
 
 @[expose] public section
@@ -47,164 +46,8 @@ open List
 
 variable {P : Type} [DecidableEq P] {A : ObjSpec}
 
-/-! ## Invocation order -/
-
-/-- Instances invoked in `α` in invocation order, numbering the invocations of `p` from `c p`. -/
-def invIdsFrom (c : P → ℕ) : List (Label P A) → List (OpId P)
-  | [] => []
-  | .inv p _ :: α => (p, c p) :: invIdsFrom (Function.update c p (c p + 1)) α
-  | .ret _ _ :: α => invIdsFrom c α
-  | .tau _ :: α => invIdsFrom c α
-
-/-- Instances invoked in `α`, in invocation order. -/
-def invIds (α : List (Label P A)) : List (OpId P) := invIdsFrom (fun _ => 0) α
-
-lemma mem_invIdsFrom (c : P → ℕ) (α : List (Label P A)) (x : OpId P) :
-    x ∈ invIdsFrom c α ↔ c x.1 ≤ x.2 ∧ x.2 < c x.1 + (opsOf α x.1).length := by
-  induction α generalizing c with
-  | nil => simp [invIdsFrom]
-  | cons ℓ α ih =>
-    cases ℓ with
-    | inv p o =>
-      simp only [invIdsFrom, mem_cons, ih, opsOf_cons, Label.invOf_inv, length_append]
-      obtain ⟨q, k⟩ := x
-      by_cases hq : p = q
-      · subst hq; simp [Function.update_self]; omega
-      · have hqp : q ≠ p := Ne.symm hq
-        simp [hq, hqp]
-    | ret p r => simp [invIdsFrom, ih]
-    | tau p => simp [invIdsFrom, ih]
-
-lemma mem_invIds (α : List (Label P A)) (x : OpId P) : x ∈ invIds α ↔ Invoked α x := by
-  simp [invIds, mem_invIdsFrom, Invoked]
-
-lemma nodup_invIdsFrom (c : P → ℕ) (α : List (Label P A)) : (invIdsFrom c α).Nodup := by
-  induction α generalizing c with
-  | nil => simp [invIdsFrom]
-  | cons ℓ α ih =>
-    cases ℓ with
-    | inv p o =>
-      simp only [invIdsFrom, nodup_cons, mem_invIdsFrom, Function.update_self]
-      exact ⟨by omega, ih _⟩
-    | ret p r => exact ih c
-    | tau p => exact ih c
-
-lemma nodup_invIds (α : List (Label P A)) : (invIds α).Nodup := nodup_invIdsFrom _ _
-
-/-- Counting function after a prefix. -/
-def invCount (c : P → ℕ) (α : List (Label P A)) : P → ℕ := fun p => c p + (opsOf α p).length
-
-lemma invIdsFrom_append (c : P → ℕ) (α β : List (Label P A)) :
-    invIdsFrom c (α ++ β) = invIdsFrom c α ++ invIdsFrom (invCount c α) β := by
-  induction α generalizing c with
-  | nil =>
-    have : invCount c ([] : List (Label P A)) = c := by funext p; simp [invCount]
-    simp [invIdsFrom, this]
-  | cons ℓ α ih =>
-    cases ℓ with
-    | inv p o =>
-      simp only [cons_append, invIdsFrom, ih, cons.injEq, true_and]
-      congr 2
-      funext q
-      by_cases hq : q = p
-      · subst hq; simp [invCount, Function.update_self]; omega
-      · simp [invCount, Function.update_of_ne hq, Ne.symm hq]
-    | ret p r => simp only [cons_append, invIdsFrom, ih]; rfl
-    | tau p => simp only [cons_append, invIdsFrom, ih]; rfl
-
-/-- Real-time order implies invocation order. -/
-lemma Precedes.sublist_invIds {α : List (Label P A)} {a b : OpId P} (h : Precedes α a b)
-    (hb : Invoked α b) (hwf : WellFormed α) : [a, b].Sublist (invIds α) := by
-  obtain ⟨β, γ, rfl, ha, hnb⟩ := h
-  have ha' : Invoked β a := lt_of_lt_of_le ha
-    ((hwf.counts (γ := γ) rfl a.1).1)
-  rw [invIds, invIdsFrom_append]
-  refine (List.singleton_sublist.2 ((mem_invIds β a).2 ha')).append
-    (List.singleton_sublist.2 ?_)
-  rw [mem_invIdsFrom]
-  simp only [Invoked, opsOf_append, length_append, invCount, Nat.zero_add, not_lt] at hb hnb ⊢
-  omega
-
-/-- Extending a well-formed history by one label. -/
-lemma WellFormed.append_singleton {α : List (Label P A)} {ℓ : Label P A} (hα : WellFormed α)
-    (hℓ : ∀ p, (ℓ.invOf p ≠ none → (opsOf α p).length = (respsOf α p).length) ∧
-      (ℓ.retOf p ≠ none → (opsOf α p).length = (respsOf α p).length + 1)) :
-    WellFormed (α ++ [ℓ]) := by
-  intro β ℓ' γ he q
-  rcases List.eq_nil_or_concat' γ with rfl | ⟨γ', x, rfl⟩
-  · obtain ⟨rfl, h2⟩ := List.append_inj' he.symm rfl
-    simp only [List.cons.injEq, and_true] at h2
-    subst h2
-    exact hℓ q
-  · have : α ++ [ℓ] = (β ++ ℓ' :: γ') ++ [x] := by rw [he]; simp
-    obtain ⟨h1, -⟩ := List.append_inj' this rfl
-    exact hα β ℓ' γ' h1 q
-
-lemma WellFormed.append_inv {α : List (Label P A)} {p : P} {o : A.Op} (hα : WellFormed α)
-    (hp : (opsOf α p).length = (respsOf α p).length) : WellFormed (α ++ [.inv p o]) := by
-  refine hα.append_singleton (fun q => ⟨fun h => ?_, fun h => by simp at h⟩)
-  by_cases hq : p = q
-  · subst hq; exact hp
-  · simp [hq] at h
-
-lemma WellFormed.append_ret {α : List (Label P A)} {p : P} {r : A.Resp} (hα : WellFormed α)
-    (hp : (opsOf α p).length = (respsOf α p).length + 1) : WellFormed (α ++ [.ret p r]) := by
-  refine hα.append_singleton (fun q => ⟨fun h => by simp at h, fun h => ?_⟩)
-  by_cases hq : p = q
-  · subst hq; exact hp
-  · simp [hq] at h
-
-/-- Real-time order towards an operation invoked before an extension is unchanged. -/
-lemma precedes_append_iff_of_invoked {α β : List (Label P A)} {a b : OpId P}
-    (hb : Invoked α b) : Precedes (α ++ β) a b ↔ Precedes α a b :=
-  ⟨fun h => h.of_append_of_invoked hb, Precedes.mono⟩
-
-/-- The operations preceding a new invocation are exactly the completed ones. -/
-lemma precedes_append_inv_iff {α : List (Label P A)} {p : P} {o : A.Op} {y : OpId P} :
-    Precedes (α ++ [.inv p o]) y (p, (opsOf α p).length) ↔ Completed α y := by
-  constructor
-  · rintro ⟨β, γ, he, hc, hni⟩
-    rcases List.prefix_or_prefix_of_prefix (l₃ := α ++ [.inv p o]) ⟨γ, he.symm⟩
-      (List.prefix_append α [.inv p o]) with hp | hp
-    · obtain ⟨δ, rfl⟩ := hp; exact hc.mono
-    · obtain ⟨δ, rfl⟩ := hp
-      rcases δ with _ | ⟨z, δ⟩
-      · simpa using hc
-      · simp only [append_assoc, cons_append, append_cancel_left_eq, cons.injEq, nil_eq,
-          append_eq_nil_iff] at he
-        obtain ⟨rfl, -, -⟩ := he
-        exact absurd (by simp [Invoked]) hni
-  · intro hc
-    exact ⟨α, [.inv p o], rfl, hc, by simp [Invoked]⟩
-
-/-- Once `b` is invoked while `a` is still pending, `a` never precedes `b`. -/
-lemma Precedes.not_of_invoked {α β : List (Label P A)} {a b : OpId P} (hb : Invoked α b)
-    (ha : ¬ Completed α a) : ¬ Precedes (α ++ β) a b := by
-  rintro ⟨β₁, γ, hsplit, h1, h2⟩
-  rcases List.append_eq_append_iff.1 hsplit with ⟨a', rfl, -⟩ | ⟨c', rfl, -⟩
-  · exact h2 hb.mono
-  · exact ha h1.mono
-
-lemma sublist_pair_asymm {X : Type} {l : List X} (hl : l.Nodup) {a b : X}
-    (h1 : [a, b].Sublist l) (h2 : [b, a].Sublist l) : False := by
-  by_cases hab : a = b
-  · subst hab; have := hl.sublist h1; simp at this
-  induction l with
-  | nil => simp at h1
-  | cons c l ih =>
-    rw [nodup_cons] at hl
-    have tail : ∀ x y, [x, y].Sublist (c :: l) → x ≠ c → [x, y].Sublist l := by
-      intro x y h hx
-      rcases List.sublist_cons_iff.1 h with h | ⟨r, hr, -⟩
-      · exact h
-      · exact absurd (List.cons.inj hr).1 hx
-    by_cases hac : a = c
-    · subst hac
-      exact hl.1 ((tail b a h2 (Ne.symm hab)).subset (by simp))
-    by_cases hbc : b = c
-    · subst hbc
-      exact hl.1 ((tail a b h1 hab).subset (by simp))
-    exact ih hl.2 (tail a b h1 hac) (tail b a h2 hbc)
+@[deprecated not_sublist_pair_both (since := "2026-10-18")]
+alias sublist_pair_asymm := not_sublist_pair_both
 
 lemma pairwise_sublist_self {X : Type} (l : List X) : l.Pairwise (fun x y => [x, y].Sublist l) := by
   induction l with
@@ -464,7 +307,7 @@ theorem SWMRReadsFrom.isLinearization {α : List (Label P (register V v₀))} {w
     · omega
     · omega
     · omega
-    · exact sublist_pair_asymm (nodup_invIds α) h2 h4
+    · exact not_sublist_pair_both (nodup_invIds α) h2 h4
   · -- legality
     have hwrite : ∀ j x, respOf α (w, j) = some x →
         ((register V v₀).δ (writeVal v₀ ws j) (ws.getD j .read)).2 = x := by
