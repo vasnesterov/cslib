@@ -189,6 +189,7 @@ public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.Times
 public import Cslib.Computability.Distributed.SharedMemory.HerlihyWing.WellFormed
 public import Cslib.Computability.Distributed.SharedMemory.History
 public import Cslib.Computability.Distributed.SharedMemory.Indist
+public import Cslib.Computability.Distributed.SharedMemory.Iso
 public import Cslib.Computability.Distributed.SharedMemory.LinPoints
 public import Cslib.Computability.Distributed.SharedMemory.Linearization
 public import Cslib.Computability.Distributed.SharedMemory.Model
@@ -196,6 +197,7 @@ public import Cslib.Computability.Distributed.SharedMemory.Mutex
 public import Cslib.Computability.Distributed.SharedMemory.ObjClasses
 public import Cslib.Computability.Distributed.SharedMemory.ObjClasses.Basic
 public import Cslib.Computability.Distributed.SharedMemory.Objects.FetchAdd
+public import Cslib.Computability.Distributed.SharedMemory.Objects.Iface
 public import Cslib.Computability.Distributed.SharedMemory.Objects.LLSC
 public import Cslib.Computability.Distributed.SharedMemory.Objects.MaxRegister
 public import Cslib.Computability.Distributed.SharedMemory.Objects.Queue
